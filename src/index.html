@@ -2,17 +2,20 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    
+
     <title>gamedash</title>
 
     <!-- links css to html -->
     <link rel="stylesheet" href="style.css">
 
     <!-- links js to html -->
-    <script src="app.js"></script>
+    <script src="app.js" type="module"></script>
 
     <!-- import chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- comment this out for production -->
+    <script src="./services/RiotAPIDebug.js" type="module"></script>
   </head>
 
   <body>

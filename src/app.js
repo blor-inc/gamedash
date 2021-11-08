@@ -46,8 +46,8 @@
         }
     });
    }
-   
- 
+
+
    /**
     * Returns a new element with the given tag name.
     * @param {string} tagName - HTML tag name for new DOM element.
@@ -84,5 +84,5 @@
      return document.querySelectorAll(query);
    }
 
-   
+
  })();
