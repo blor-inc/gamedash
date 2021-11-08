@@ -6,15 +6,17 @@
    window.addEventListener("load", init);
 
    function init() {
-     createGraph();
+    //  createGraph();
+     createGraph("graph1");
+     createGraph("graph2");
     //  id("start-btn").addEventListener("click", startGame);
     //  id("back-btn").addEventListener("click", endGame);
    }
 
-   function createGraph() {
-    let ctx = id("chart");
+   function createGraph(id) {
+    // let ctx = id("chart");
 
-   const myChart = new Chart(ctx, {
+   const myChart = new Chart(id, {
        type: 'bar',
        data: {
            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
