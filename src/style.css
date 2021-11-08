@@ -1,5 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Spartan&display=swap');
+/* use # for id, . for class */
+
  body, button, select, input {
-    font-family: "Helvetica", "Verdana", sans-serif;
+    font-family: "Spartan", sans-serif;
     text-align: center;
     font-size: 12pt;
   }
@@ -7,4 +10,9 @@
   main {
     width: 80%;
     margin: auto;
+  }
+
+  #chart {
+    width: 1000px;
+    height: 1000px;
   }
