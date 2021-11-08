@@ -1,10 +1,10 @@
  "use strict";
- import { champRotation } from "./services/RiotAPI.js";
+ import * as apiService from "./services/RiotAPI.js";
  (function() {
    window.addEventListener("load", init);
 
    function init() {
-
+     console.log(apiService.getallSummonerGames("americas", 'FelliDLGt30fA25eIDAIqgqe1qTysMVAmD4vvVhbztHoxIakFlLMpWxZxny7G_ZeN5mtab6ACdWFzw'));
      id("start-btn").addEventListener("click", startGame);
      id("back-btn").addEventListener("click", endGame);
    }
