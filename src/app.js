@@ -1,11 +1,10 @@
  "use strict";
-//  import Chart from "chart.js"
 
  (function() {
- 
    window.addEventListener("load", init);
 
    function init() {
+
      createGraph();
     //  id("start-btn").addEventListener("click", startGame);
     //  id("back-btn").addEventListener("click", endGame);
@@ -95,7 +94,7 @@
    function gen(tagName) {
      return document.createElement(tagName);
    }
- 
+
    /**
     * Returns the element that has the ID attribute with the specified value.
     * @param {string} name - element ID.
@@ -104,7 +103,7 @@
    function id(name) {
      return document.getElementById(name);
    }
- 
+
    /**
     * Returns first element matching selector.
     * @param {string} selector - CSS query selector.
@@ -113,7 +112,7 @@
    function qs(selector) {
      return document.querySelector(selector);
    }
- 
+
    /**
     * Returns an array of elements matching the given query.
     * @param {string} query - CSS query selector.
@@ -125,4 +124,3 @@
 
    
  })();
- 
