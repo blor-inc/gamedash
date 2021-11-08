@@ -8,6 +8,9 @@
   }
   
   main {
+    display: flex;
+    align-items: flex-end;
+    flex-wrap: wrap;
     width: 80%;
     margin: auto;
   }
