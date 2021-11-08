@@ -1,13 +1,14 @@
  "use strict";
+ import { champRotation } from "./services/RiotAPI.js";
  (function() {
- 
    window.addEventListener("load", init);
 
    function init() {
+
      id("start-btn").addEventListener("click", startGame);
      id("back-btn").addEventListener("click", endGame);
    }
- 
+
    /**
     * Returns a new element with the given tag name.
     * @param {string} tagName - HTML tag name for new DOM element.
@@ -16,7 +17,7 @@
    function gen(tagName) {
      return document.createElement(tagName);
    }
- 
+
    /**
     * Returns the element that has the ID attribute with the specified value.
     * @param {string} name - element ID.
@@ -25,7 +26,7 @@
    function id(name) {
      return document.getElementById(name);
    }
- 
+
    /**
     * Returns first element matching selector.
     * @param {string} selector - CSS query selector.
@@ -34,7 +35,7 @@
    function qs(selector) {
      return document.querySelector(selector);
    }
- 
+
    /**
     * Returns an array of elements matching the given query.
     * @param {string} query - CSS query selector.
@@ -44,4 +45,3 @@
      return document.querySelectorAll(query);
    }
  })();
- 

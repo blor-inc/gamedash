@@ -1,6 +1,6 @@
   // api testing -----------------------------------------------------------------------------------------------
-  import {champRotation, summonerByName, matches, getallSummonerGames, getMatchDetails, getProfileIconLink} from '/riot_api_wrapper.js';
-  
+  import {champRotation, summonerByName, matches, getallSummonerGames, getMatchDetails, getProfileIconLink} from '/RiotAPI.js';
+
   champRotation('na1').then(function(data) {
     console.log(data.freeChampionIds);
   });
