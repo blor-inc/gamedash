@@ -1,7 +1,7 @@
 // example api calls in another file:
 
 let latestDataDragonVersion = "11.22.1";
-let key = "RGAPI-a973aaff-6f12-4142-8ec3-b30f119bc8ec";
+let key = "";
 
 
 /**
