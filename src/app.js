@@ -9,13 +9,6 @@ import * as apiService from "./services/RiotAPI.js";
 //   console.log(data.summonerLevel);
 // });
 
-// function myFunction() {
-//   var x = document.createElement("INPUT");
-//   x.setAttribute("type", "text");
-//   x.setAttribute("value", "Hello World!");
-//   document.body.appendChild(x);
-// }
-
 
 /// Graph functions
 (function() {
@@ -42,6 +35,21 @@ function summoner_id_search() {
   // createGraph("graph1");
   // createGraph("graph2");
 
+  // Add function to plug this into riotAPI and then grab data from it
+
+  // apiService.summonerByName('na1', name).then(function(data) {
+//   console.log(data.summonerLevel);
+// });
+
+// Add function to turn data into scatterplot points:
+// data: [{
+//   x: 10,
+//   y: 20
+// }, {
+//   x: 15,
+//   y: 10
+// }]
+
 }
 
   function createGraph(playerName) {
@@ -55,29 +63,12 @@ function summoner_id_search() {
 
   
     const myChart = new Chart(playerName, {
-      type: 'bar',
+      type: 'scatter',
       data: {
         labels: summonerid_arr,
         datasets: [{
         label: '# of Votes',
         data: [12, 19, 3, 5, 2, 3],
-        backgroundColor: [
-          'rgba(255, 99, 132, 0.2)',
-          'rgba(54, 162, 235, 0.2)',
-          'rgba(255, 206, 86, 0.2)',
-          'rgba(75, 192, 192, 0.2)',
-          'rgba(153, 102, 255, 0.2)',
-          'rgba(255, 159, 64, 0.2)'
-        ],
-        borderColor: [
-            'rgba(255, 99, 132, 1)',
-            'rgba(54, 162, 235, 1)',
-            'rgba(255, 206, 86, 1)',
-            'rgba(75, 192, 192, 1)',
-            'rgba(153, 102, 255, 1)',
-            'rgba(255, 159, 64, 1)'
-          ],
-        borderWidth: 1
         }]
       },
       options: {
