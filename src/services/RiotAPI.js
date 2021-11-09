@@ -1,7 +1,7 @@
 // example api calls in another file:
 
 const latestDataDragonVersion = "11.22.1";
-const key = "RGAPI-a973aaff-6f12-4142-8ec3-b30f119bc8ec";
+const key = "RGAPI-e4cad59c-5144-4c47-9dee-a86dba84d8b9";
 
 /**
  * Example API (check if it works)
