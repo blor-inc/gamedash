@@ -43,7 +43,8 @@ import * as apiService from "./services/RiotAPI.js";
   }
 
 
-  function summoner_id_search() {
+  async function summoner_id_search() {
+    console.log(await apiService.getMatchesInfo("na1", "nubwett"));
     id("graphs").innerHTML = "";
 
     // get data from the textbox search
