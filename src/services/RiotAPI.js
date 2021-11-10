@@ -2,7 +2,7 @@
 "use strict";
 
 const latestDataDragonVersion = "11.22.1";
-const KEY = "RGAPI-acf780b1-c260-40fb-b56a-6a4454669348";
+const KEY = "RGAPI-e4cad59c-5144-4c47-9dee-a86dba84d8b9";
 const KEY_QUERY = "?api_key=" + KEY;
 
 const MAPPED_REGIONS = {"americas": ["na1", "br1", "la1", "la2", "oc1"],
@@ -25,17 +25,17 @@ export function champRotation(region) {
 
 /**
  * // https://developer.riotgames.com/apis#summoner-v4
- * @param {string} region 
+ * @param {string} region ex: NA1, BR1, EWN1, EWN1, JP1, KR, LA1, LA2, OC1, RU, TR1
  * @param {string} name 
  * @returns object with summoner name and puuid.
  */
 async function summonerByName(region, name) {
+
     try {
-    let response = await fetch('https://' + region + '.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + name + KEY_QUERY);
-    await statusCheck(response);
-    let data = await response.json();
-    return {"name": name, "puuid": data.puuid};
-    // return data;
+      let response = await fetch('https://' + region + '.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + name + KEY_QUERY);
+      await statusCheck(response);
+      let data = await response.json();
+      return {"name": name, "puuid": data.puuid};
     } catch(e) {
         return "Error: Could not find player name";
     }

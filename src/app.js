@@ -14,87 +14,120 @@ import * as apiService from "./services/RiotAPI.js";
 (function() {
   window.addEventListener("load", init);
   let search_input = "";
-  let player_kills = 25;
-  let team_total = 100;
-  let kill_difference = 75;
+  let labels = [];
+  let title = "";
 
   function init() {
+
     let btn = id("button");
     btn.addEventListener("click", summoner_id_search);
     let search_text = id("fname");
 
     search_text.addEventListener('keypress', function ( event ){
       let key = event.keyCode;
-      console.log(event);
-      console.log(key);
-      if (key === 13){
+      if (key === 32) {
+        event.preventDefault();
+      }
+      if (event.key === "Enter"){
+        event.preventDefault();
         summoner_id_search();
       }
     })
-
-    /// dont allow spaces, only type one summoner name >:((((
-    search_text.addEventListener('keypress', function( event ){
-    let key = event.keyCode;
-    if (key === 32) {
-      event.preventDefault();
-    }
-
-  })
   }
 
-
   async function summoner_id_search() {
-    console.log(await apiService.getMatchesInfo("na1", "nubwett"));
-    id("graphs").innerHTML = "";
 
     // get data from the textbox search
     search_input = id("fname").value;
+    labels = [search_input, "Team"];
+    console.log(labels);
     console.log(search_input);
+    id("graphs").innerHTML = "";
+
+    // Loading circle while grabbing data from API
+    id("bars6").parentNode.classList.remove("hidden");
+
+    let info = await apiService.getMatchesInfo("na1", search_input);  
+    console.log(info);
+    id("bars6").parentNode.classList.add("hidden");
+
+    // total kills:
+    let arr = [];
+    for (let i = 0; i < 10; i++) {
+      arr.push((info.playerStats[i].kills / info.teamStats[0].objectives.champion.kills)* 100);
+    }
+    const median = arr => {
+      const mid = Math.floor(arr.length / 2),
+        nums = [...arr].sort((a, b) => a - b);
+      return arr.length % 2 !== 0 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2;
+    };
+
+    // Damage %
+
+    // Create the graphs!!!
+
+    id("graphs").innerHTML = "";
+
+    createGraph(search_input, [median(arr), 100 - median(arr)], labels, "Kill participation");
+    createGraph(search_input, [median(arr), 100 - median(arr)], labels, "Damage % of team");
 
 
-    createGraph(search_input);
-
-    //summonerid_arr = search_input.split(",").map(item => item.trim());
-    // console.log(summonerid_arr);
-
-    
-    // summonerid_arr.forEach(summoner => createGraph(summoner));
-    // createGraph("graph2");
-
-    // Add function to plug this into riotAPI and then grab data from it
-
-    // apiService.summonerByName('na1', name).then(function(data) {
-    //   console.log(data.summonerLevel);
-    // });  
   }
+  console.log(search_input);
 
+  function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+  }
  
+  var colors = ['rgb(243, 164, 181)', 'rgb(137, 101, 224)', 'rgb(94, 114, 228)', 'rgb(0, 242, 195)']
+  
+  console.log(labels);
 
-
-  function createGraph(playerName) {
+  function createGraph(playerName, data, labels, title) {
+    shuffleArray(colors);
     let figure = gen("figure");
     let canvas = gen("canvas");
-    canvas.id = playerName;
+
+    canvas.id = title;
     console.log(canvas);
     console.log(id("graphs"));
     figure.appendChild(canvas);
+
     id("graphs").appendChild(figure);
 
-    const myChart = new Chart(playerName, {
+    const myChart = new Chart(title, {
       type: 'doughnut',
       data: {
-        label: search_input,
+        labels: labels,
         datasets: [{
-        label: '# of Votes',
-        data: [12, 19, 3, 5, 2, 3],
+          label: 'Graph',
+          data: data,
+          backgroundColor:colors,
         }]
       },
-      hoverOffset: 4,
       options: {
+        hoverOffset: 6,
         responsive: true,
-        scales: {
-          y: {
-            beginAtZero: true
+        plugins:{
+          title:{
+            display: true,
+            text: title,
+            color: '#adb5bd',
+            align: 'start',
+            padding: {
+              bottom: 30
+            },
+            font:{
+              size:15,
+              family: "'Spartan', sans-serif"
+            },
+          },
+
+          legend:{
+            position: 'bottom'
           }
         }
       }
