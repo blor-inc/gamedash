@@ -9,19 +9,6 @@ const MAPPED_REGIONS = {"americas": ["na1", "br1", "la1", "la2", "oc1"],
                         "asia": ["kr", "jp1"],
                         "europe": ["eun1", "euw1", "tr1", "ru"]};
 
-
-// export function getPuuid(name) {
-//     fetch()
-//     .then(statusCheck)
-//     .then(resp => resp.json())
-//     .then(processPuuid)
-//     }
-// }
-
-// function processPuuid(data) {
-
-// }
-
 /**
  * Example API (check if it works)
  * gets champion rotations
@@ -36,9 +23,12 @@ export function champRotation(region) {
         .catch((error) => console.warn("ERROR: ", error));
 }
 
-// https://developer.riotgames.com/apis#summoner-v4
-// regions include: NA1, BR1, EWN1, EWN1, JP1, KR, LA1, LA2, OC1, RU, TR1
-// return with: accountId, profileIconId, revisionDate, name, id, puuid, summonerLevel
+/**
+ * // https://developer.riotgames.com/apis#summoner-v4
+ * @param {string} region 
+ * @param {string} name 
+ * @returns object with summoner name and puuid.
+ */
 async function summonerByName(region, name) {
     try {
     let response = await fetch('https://' + region + '.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + name + KEY_QUERY);
@@ -51,6 +41,11 @@ async function summonerByName(region, name) {
     }
 }
 
+/**
+ * 
+ * @param {String} region 
+ * @returns general region
+ */
 function findGeneralRegion(region) {
     let generalRegion;
     if (MAPPED_REGIONS.americas.includes(region)) {
@@ -62,7 +57,12 @@ function findGeneralRegion(region) {
     }
     return generalRegion;
 }
-
+/**
+ * 
+ * @param {string} region 
+ * @param {string} name 
+ * @returns the match data of last 10 games, summoner name, and summoner puuid
+ */
 async function getMatches(region, name) {
     try {
         let summonerName = await summonerByName(region, name);
@@ -87,7 +87,13 @@ async function getMatches(region, name) {
         return "Error: Could not find matches for specified player";
     }
 }
-
+/**
+ * 
+ * @param {string} region 
+ * @param {string} name 
+ * @returns player stats, general team stats, team player stats, and match ids of the last {10} games. (see getMatchs()) 
+ * also returns with summoner name and puuid
+ */
 export async function getMatchesInfo(region, name) {
     try {
         let arr = [];
@@ -116,6 +122,13 @@ export async function getMatchesInfo(region, name) {
     }
 }
 
+/**
+ * 
+ * @param {string} region 
+ * @param {string} name 
+ * @returns an array of ally team's total damage dealt to champions ({10} games).
+ * Each index represents one game. (From most recent ranked games)
+ */
 export async function getMatchesTeamDamage(region, name) {
     let playerMatchData = await getMatchesInfo(region, name);
     console.log(playerMatchData);
@@ -142,11 +155,20 @@ export async function getMatchesTeamDamage(region, name) {
 
 }
 
-
+/**
+ * 
+ * @param {string} id 
+ * @returns The link for league profile icon
+ */
 export function getProfileIconLink(id) {
     return 'https://ddragon.leagueoflegends.com/cdn/' + latestDataDragonVersion + '/img/profileicon/' + id + '.png'
 }
 
+/**
+ * 
+ * @param {string} response 
+ * @returns response
+ */
 async function statusCheck(response) {
     if (!response.ok) {
         throw new Error(await response.text());
