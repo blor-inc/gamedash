@@ -14,7 +14,7 @@ import * as apiService from "./services/RiotAPI.js";
 (function() {
   window.addEventListener("load", init);
   let search_input = "";
-  let labels = [search_input, "Team"]
+  let labels = [];
 
 
   function init() {
@@ -39,7 +39,7 @@ import * as apiService from "./services/RiotAPI.js";
 
     // get data from the textbox search
     search_input = id("fname").value;
-    labels = labels;
+    labels = [search_input, "Team"];
     console.log(labels);
     console.log(search_input);
     id("graphs").innerHTML = "";
