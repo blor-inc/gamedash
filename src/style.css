@@ -62,7 +62,6 @@
   }
   main {
     flex:1;
-
     margin-left: 50px;
     padding-top: 20px;
     display: flex;
@@ -70,7 +69,6 @@
     flex-wrap: wrap;
     flex-direction: row;
     width: 100%;
-
   }
 
   footer{

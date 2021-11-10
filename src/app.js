@@ -1,7 +1,7 @@
 "use strict";
 
 // Data collection from API
-// import * as apiService from "./services/RiotAPI.js";
+import * as apiService from "./services/RiotAPI.js";
 
 // var name = "brokenpancake"
 
@@ -67,7 +67,8 @@
     // });  
   }
 
-  
+ 
+
 
   function createGraph(playerName) {
     let figure = gen("figure");
