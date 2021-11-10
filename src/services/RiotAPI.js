@@ -9,19 +9,6 @@ const MAPPED_REGIONS = {"americas": ["na1", "br1", "la1", "la2", "oc1"],
                         "asia": ["kr", "jp1"],
                         "europe": ["eun1", "euw1", "tr1", "ru"]};
 
-
-// export function getPuuid(name) {
-//     fetch()
-//     .then(statusCheck)
-//     .then(resp => resp.json())
-//     .then(processPuuid)
-//     }
-// }
-
-// function processPuuid(data) {
-
-// }
-
 /**
  * Example API (check if it works)
  * gets champion rotations
@@ -36,21 +23,29 @@ export function champRotation(region) {
         .catch((error) => console.warn("ERROR: ", error));
 }
 
-// https://developer.riotgames.com/apis#summoner-v4
-// regions include: NA1, BR1, EWN1, EWN1, JP1, KR, LA1, LA2, OC1, RU, TR1
-// return with: accountId, profileIconId, revisionDate, name, id, puuid, summonerLevel
-export async function summonerByName(region, name) {
+/**
+ * // https://developer.riotgames.com/apis#summoner-v4
+ * @param {string} region ex: NA1, BR1, EWN1, EWN1, JP1, KR, LA1, LA2, OC1, RU, TR1
+ * @param {string} name 
+ * @returns object with summoner name and puuid.
+ */
+async function summonerByName(region, name) {
+
     try {
-    let response = await fetch('https://' + region + '.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + name + KEY_QUERY);
-    await statusCheck(response);
-    let data = await response.json();
-    return {"name": name, "puuid": data.puuid};
-    // return data;
+      let response = await fetch('https://' + region + '.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + name + KEY_QUERY);
+      await statusCheck(response);
+      let data = await response.json();
+      return {"name": name, "puuid": data.puuid};
     } catch(e) {
         return "Error: Could not find player name";
     }
 }
 
+/**
+ * 
+ * @param {String} region 
+ * @returns general region
+ */
 function findGeneralRegion(region) {
     let generalRegion;
     if (MAPPED_REGIONS.americas.includes(region)) {
@@ -62,7 +57,12 @@ function findGeneralRegion(region) {
     }
     return generalRegion;
 }
-
+/**
+ * 
+ * @param {string} region 
+ * @param {string} name 
+ * @returns the match data of last 10 games, summoner name, and summoner puuid
+ */
 async function getMatches(region, name) {
     try {
         let summonerName = await summonerByName(region, name);
@@ -87,18 +87,24 @@ async function getMatches(region, name) {
         return "Error: Could not find matches for specified player";
     }
 }
-
+/**
+ * 
+ * @param {string} region 
+ * @param {string} name 
+ * @returns player stats, general team stats, team player stats, and match ids of the last {10} games. (see getMatchs()) 
+ * also returns with summoner name and puuid
+ */
 export async function getMatchesInfo(region, name) {
     try {
         let arr = [];
         let team = [];
-      
+        let teamPlayerStats = [];
         let json = await getMatches(region, name);
-
         for (const matchId of json.matches) {
             let response = await fetch('https://' + findGeneralRegion(region) + '.api.riotgames.com/lol/match/v5/matches/' + matchId + KEY_QUERY);
             await statusCheck(response);
             let data = await response.json();
+            teamPlayerStats.push(data.info.participants);
             for (const participant of data.info.participants) {
                 if (participant.puuid === json.puuid) {
                     arr.push(participant);
@@ -107,6 +113,7 @@ export async function getMatchesInfo(region, name) {
                 }
             }
         }
+        json["teamPlayerStats"] = teamPlayerStats;
         json["playerStats"] = arr;
         json["teamStats"] = team;
         return json;
@@ -115,68 +122,53 @@ export async function getMatchesInfo(region, name) {
     }
 }
 
+/**
+ * 
+ * @param {string} region 
+ * @param {string} name 
+ * @returns an array of ally team's total damage dealt to champions ({10} games).
+ * Each index represents one game. (From most recent ranked games)
+ */
+export async function getMatchesTeamDamage(region, name) {
+    let playerMatchData = await getMatchesInfo(region, name);
+    console.log(playerMatchData);
+    let gameDmg = [];
+    let index = 0;
+    let playerTeamIds = []
+    for (const playerMatch of playerMatchData.playerStats) {
+        playerTeamIds.push(playerMatch.teamId);
+    }
+
+    for (const match of playerMatchData.teamPlayerStats) {
+        let summonerTeam = playerTeamIds[index];
+        let tally = 0;
+        for (const players of match) {
+            if (players.teamId === summonerTeam) {
+                tally += players.totalDamageDealtToChampions;
+            }
+        }
+        gameDmg.push(tally);
+        index++;
+    }
+
+    return gameDmg;
+
+}
 
 /**
- *
- * // https://developer.riotgames.com/apis#match-v5
- * @param {string} region americas (NA, BR, LAN, LAS, and OCE), asia (KR and JP), europe (EUNE, EUW, TR, and RU)
- * @param {string} puuid
- * @param {string} count
- * @param {string} start
- * @param {string} type
- * @param {string} startTime
- * @param {string} endTime
- * @param {string} queue
- * @returns array of match ids
+ * 
+ * @param {string} id 
+ * @returns The link for league profile icon
  */
-export function matches(region, puuid, count, start, type, startTime, endTime, queue) {
-    let queryString ='https://' + region + '.api.riotgames.com/lol/match/v5/matches/by-puuid/' + puuid + '/ids' + KEY_QUERY;
-
-    if  (count) {queryString += '&count=' + count}else{queryString += '&count=100'};
-    if  (start) queryString += '&start=' + start;
-    if  (type) queryString += '&type=' + type;
-    if  (startTime) queryString += '&startTime=' + startTime;
-    if  (endTime) queryString += '&endTime=' + endTime;
-    if  (queue) queryString += '&queue=' + queue;
-
-    return fetch(queryString)
-        .then(resp => resp.json())
-        .catch((error) => console.warn("ERROR: ", error));
-}
-
-// regions include: americas (NA, BR, LAN, LAS, and OCE), asia (KR and JP), europe (EUNE, EUW, TR, and RU)
-// gets all match ids of a player
-export function getallSummonerGames(region, puuid) {
-    let allMatchIds = [];
-    let c = 100;
-    let index = 0;
-    let helper = function() {
-        matches(region, puuid, c, index).then(function(data) {
-            if (data.length !== 0) {
-                for (let i = 0; i < data.length; i++) {
-                    allMatchIds.push(data[i]);
-                }
-                index += data.length;
-                helper()
-            }
-        });
-    }
-    helper();
-    return allMatchIds;
-}
-
-// regions include: americas (NA, BR, LAN, LAS, and OCE), asia (KR and JP), europe (EUNE, EUW, TR, and RU)
-// returns match data
-export function getMatchDetails(region, matchid) {
-    return fetch('https://' + region + '.api.riotgames.com/lol/match/v5/matches/' + matchid + KEY_QUERY)
-        .then(resp => resp.json())
-        .catch((error) => console.warn("ERROR: ", error));
-}
-
 export function getProfileIconLink(id) {
     return 'https://ddragon.leagueoflegends.com/cdn/' + latestDataDragonVersion + '/img/profileicon/' + id + '.png'
 }
 
+/**
+ * 
+ * @param {string} response 
+ * @returns response
+ */
 async function statusCheck(response) {
     if (!response.ok) {
         throw new Error(await response.text());
