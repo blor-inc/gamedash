@@ -2,7 +2,8 @@
 "use strict";
 
 const latestDataDragonVersion = "11.22.1";
-const KEY = "RGAPI-849b3d73-bcaf-4a99-92e3-d7a94c107218";
+
+const KEY = "RGAPI-6f772905-6ec9-4553-bd22-c3ff6fc23f69";
 const KEY_QUERY = "?api_key=" + KEY;
 
 const MAPPED_REGIONS = {"americas": ["na1", "br1", "la1", "la2", "oc1"],
@@ -26,7 +27,7 @@ export function champRotation(region) {
 /**
  * // https://developer.riotgames.com/apis#summoner-v4
  * @param {string} region ex: NA1, BR1, EWN1, EWN1, JP1, KR, LA1, LA2, OC1, RU, TR1
- * @param {string} name 
+ * @param {string} name
  * @returns object with summoner name and puuid.
  */
 async function summonerByName(region, name) {
@@ -42,8 +43,8 @@ async function summonerByName(region, name) {
 }
 
 /**
- * 
- * @param {String} region 
+ *
+ * @param {String} region
  * @returns general region
  */
 function findGeneralRegion(region) {
@@ -58,9 +59,9 @@ function findGeneralRegion(region) {
     return generalRegion;
 }
 /**
- * 
- * @param {string} region 
- * @param {string} name 
+ *
+ * @param {string} region
+ * @param {string} name
  * @returns the match data of last 10 games, summoner name, and summoner puuid
  */
 async function getMatches(region, name) {
@@ -88,10 +89,10 @@ async function getMatches(region, name) {
     }
 }
 /**
- * 
- * @param {string} region 
- * @param {string} name 
- * @returns player stats, general team stats, team player stats, and match ids of the last {10} games. (see getMatchs()) 
+ *
+ * @param {string} region
+ * @param {string} name
+ * @returns player stats, general team stats, team player stats, and match ids of the last {10} games. (see getMatchs())
  * also returns with summoner name and puuid
  */
 export async function getMatchesInfo(region, name) {
@@ -123,20 +124,21 @@ export async function getMatchesInfo(region, name) {
 }
 
 /**
- * 
- * @param {string} region 
- * @param {string} name 
+ *
+ * @param {string} region
+ * @param {string} name
  * @returns an array of ally team's total damage dealt to champions ({10} games).
  * Each index represents one game. (From most recent ranked games)
  */
-export async function getMatchesTeamDamage(region, name) {
+export async function getMatchesDmgPercentage(region, name) {
     let playerMatchData = await getMatchesInfo(region, name);
-    console.log(playerMatchData);
     let gameDmg = [];
     let index = 0;
-    let playerTeamIds = []
+    let playerTeamIds = [];
+    let playerDmgDealt = [];
     for (const playerMatch of playerMatchData.playerStats) {
         playerTeamIds.push(playerMatch.teamId);
+        playerDmgDealt.push(playerMatch.totalDamageDealtToChampions);
     }
 
     for (const match of playerMatchData.teamPlayerStats) {
@@ -147,17 +149,16 @@ export async function getMatchesTeamDamage(region, name) {
                 tally += players.totalDamageDealtToChampions;
             }
         }
-        gameDmg.push(tally);
+        gameDmg.push(playerDmgDealt[index] / tally * 100);
         index++;
     }
-
     return gameDmg;
 
 }
 
 /**
- * 
- * @param {string} id 
+ *
+ * @param {string} id
  * @returns The link for league profile icon
  */
 export function getProfileIconLink(id) {
@@ -165,8 +166,8 @@ export function getProfileIconLink(id) {
 }
 
 /**
- * 
- * @param {string} response 
+ *
+ * @param {string} response
  * @returns response
  */
 async function statusCheck(response) {
