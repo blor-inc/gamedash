@@ -16,6 +16,8 @@ import * as apiService from "./services/RiotAPI.js";
   let search_input = "";
   let labels = [];
   let title = "";
+  var colors = ['rgb(243, 164, 181)', 'rgb(137, 101, 224)', 'rgb(94, 114, 228)', 'rgb(0, 242, 195)']
+
 
   function init() {
 
@@ -48,6 +50,9 @@ import * as apiService from "./services/RiotAPI.js";
     id("bars6").parentNode.classList.remove("hidden");
 
     let info = await apiService.getMatchesInfo("na1", search_input);  
+    let damage = await apiService.getMatchesTeamDamage("na1", search_input);
+    console.log(damage);
+
     console.log(info);
     id("bars6").parentNode.classList.add("hidden");
 
@@ -69,39 +74,38 @@ import * as apiService from "./services/RiotAPI.js";
     id("graphs").innerHTML = "";
 
     createGraph(search_input, [median(arr), 100 - median(arr)], labels, "Kill participation");
-    createGraph(search_input, [median(arr), 100 - median(arr)], labels, "Damage % of team");
-
+    createGraph(search_input, [20, 80], labels, "Damage % of team");
 
   }
   console.log(search_input);
 
-  function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
+  function arrayRotate(arr, reverse) {
+    if (reverse) arr.unshift(arr.pop());
+    else arr.push(arr.shift());
+    return arr;
   }
  
-  var colors = ['rgb(243, 164, 181)', 'rgb(137, 101, 224)', 'rgb(94, 114, 228)', 'rgb(0, 242, 195)']
   
   console.log(labels);
 
   function createGraph(playerName, data, labels, title) {
-    shuffleArray(colors);
+    colors = arrayRotate(colors);
+
     let figure = gen("figure");
     let canvas = gen("canvas");
 
     canvas.id = title;
-    console.log(canvas);
-    console.log(id("graphs"));
-    figure.appendChild(canvas);
 
+    figure.appendChild(canvas);
+    
     id("graphs").appendChild(figure);
 
     const myChart = new Chart(title, {
       type: 'doughnut',
       data: {
         labels: labels,
+        opacity:.2,
+
         datasets: [{
           label: 'Graph',
           data: data,
