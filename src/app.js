@@ -1,7 +1,7 @@
 "use strict";
 
 // Data collection from API
-import * as apiService from "./services/RiotAPI.js";
+// import * as apiService from "./services/RiotAPI.js";
 
 // var name = "brokenpancake"
 
@@ -13,44 +13,61 @@ import * as apiService from "./services/RiotAPI.js";
 /// Graph functions
 (function() {
   window.addEventListener("load", init);
-  let summonerid_arr = [];
+  let search_input = "";
+  let player_kills = 25;
+  let team_total = 100;
+  let kill_difference = 75;
 
   function init() {
     let btn = id("button");
     btn.addEventListener("click", summoner_id_search);
+    let search_text = id("fname");
+
+    search_text.addEventListener('keypress', function ( event ){
+      let key = event.keyCode;
+      console.log(event);
+      console.log(key);
+      if (key === 13){
+        summoner_id_search();
+      }
+    })
+
+    /// dont allow spaces, only type one summoner name >:((((
+    search_text.addEventListener('keypress', function( event ){
+    let key = event.keyCode;
+    if (key === 32) {
+      event.preventDefault();
+    }
+
+  })
   }
 
 
-function summoner_id_search() {
-  id("graphs").innerHTML = "";
+  function summoner_id_search() {
+    id("graphs").innerHTML = "";
 
-  // get data from the textbox search
-  let search_input = id("myText").value;
-  console.log(search_input);
+    // get data from the textbox search
+    search_input = id("fname").value;
+    console.log(search_input);
 
-  summonerid_arr = search_input.split(",").map(item => item.trim());
-  console.log(summonerid_arr);
 
-  summonerid_arr.forEach(summoner => createGraph(summoner));
-  // createGraph("graph1");
-  // createGraph("graph2");
+    createGraph(search_input);
 
-  // Add function to plug this into riotAPI and then grab data from it
+    //summonerid_arr = search_input.split(",").map(item => item.trim());
+    // console.log(summonerid_arr);
 
-  // apiService.summonerByName('na1', name).then(function(data) {
-//   console.log(data.summonerLevel);
-// });
+    
+    // summonerid_arr.forEach(summoner => createGraph(summoner));
+    // createGraph("graph2");
 
-// Add function to turn data into scatterplot points:
-// data: [{
-//   x: 10,
-//   y: 20
-// }, {
-//   x: 15,
-//   y: 10
-// }]
+    // Add function to plug this into riotAPI and then grab data from it
 
-}
+    // apiService.summonerByName('na1', name).then(function(data) {
+    //   console.log(data.summonerLevel);
+    // });  
+  }
+
+  
 
   function createGraph(playerName) {
     let figure = gen("figure");
@@ -61,16 +78,16 @@ function summoner_id_search() {
     figure.appendChild(canvas);
     id("graphs").appendChild(figure);
 
-  
     const myChart = new Chart(playerName, {
-      type: 'scatter',
+      type: 'doughnut',
       data: {
-        labels: summonerid_arr,
+        label: search_input,
         datasets: [{
         label: '# of Votes',
         data: [12, 19, 3, 5, 2, 3],
         }]
       },
+      hoverOffset: 4,
       options: {
         responsive: true,
         scales: {
