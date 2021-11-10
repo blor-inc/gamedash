@@ -63,8 +63,7 @@ function findGeneralRegion(region) {
     return generalRegion;
 }
 
-
-export async function getMatches(region, name) {
+async function getMatches(region, name) {
     try {
         let summonerName = await summonerByName(region, name);
 
@@ -92,28 +91,25 @@ export async function getMatches(region, name) {
 export async function getMatchesInfo(region, name) {
     try {
         let arr = [];
-
-
+        let team = [];
+      
         let json = await getMatches(region, name);
 
         for (const matchId of json.matches) {
-            console.log(matchId);
             let response = await fetch('https://' + findGeneralRegion(region) + '.api.riotgames.com/lol/match/v5/matches/' + matchId + KEY_QUERY);
             await statusCheck(response);
             let data = await response.json();
             for (const participant of data.info.participants) {
-                arr.push(participant);
-                break;
+                if (participant.puuid === json.puuid) {
+                    arr.push(participant);
+                    team.push(data.info.teams[(participant.teamId / 100) - 1]);
+                    break;
+                }
             }
         }
         json["playerStats"] = arr;
-        // console.log(json);
+        json["teamStats"] = team;
         return json;
-        // let matchId = await getMatches(region, name);
-        // let response = await fetch('https://' + findGeneralRegion(region) + '.api.riotgames.com/lol/match/v5/matches/' + matchId + KEY_QUERY);
-        // await statusCheck(response);
-        // let data = await response.json();
-        // return data;
     } catch(e) {
         return "Error: Could not get match info for specified player";
     }
