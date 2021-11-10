@@ -7,7 +7,6 @@
     font-size: 12pt;
     color:#b8bfe0;
     text-align: left;
-
     }
 
   body {
@@ -18,44 +17,55 @@
     height:100%;
     background-color: #212529;
   }
-  
-  #textbox{
-    margin-left:50px;
+
+  #graphs {
     display: flex;
-    align-items:flex-start;
-    flex-direction: column;
-  }
-
-  #myText {
-    color: black;
-  }
-
-  #button {
-    color: black;
-  }
-
-  #headingSearch {
-    display:flex;
     flex-direction:row;
   }
 
-  header {
-    margin: 50px;
+  .box {
+    display:flex;
+    flex-direction:row;
   }
+  
 
   canvas {
     padding: 25px;
     margin-right: 20px;
     margin-bottom: 20px;
-    background-color: #32325d;
+    background-color:rgba(50, 50, 93, 0.60);
+    opacity:0.7;
     font-family: "Spartan", sans-serif;
-
-  }
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    border-radius: 20px;
+    }
 
   figure {
     flex-basis: 30%;
     margin-right: 0px;
     margin-left: 0px;
+  }
+
+  #myText {
+    color: #212529;
+  }
+
+  #button {
+    color: #212529;
+  }
+
+  #headingSearch {
+    display:flex;
+    flex-direction:row;
+    align-items:baseline;
+  }
+
+  #regions{
+    color: #212529;
+  }
+  header {
+    margin-left: 50px;
+    font-size: 25px;
   }
 
   #SearchDesc{
@@ -208,3 +218,4 @@
   }
 }
 /** END of bars6 */
+
