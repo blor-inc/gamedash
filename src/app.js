@@ -1,51 +1,89 @@
- "use strict";
+"use strict";
 
- (function() {
-   window.addEventListener("load", init);
+// Data collection from API
+import * as apiService from "./services/RiotAPI.js";
 
-   function init() {
-     createGraph("graph1");
-     createGraph("graph2");
-   }
+// var name = "brokenpancake"
 
-   function createGraph(id) {
+// apiService.summonerByName('na1', name).then(function(data) {
+//   console.log(data.summonerLevel);
+// });
 
-    const myChart = new Chart(id, {
-        type: 'bar',
-        data: {
-            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-            datasets: [{
-                label: '# of Votes',
-                data: [12, 19, 3, 5, 2, 3],
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)',
-                    'rgba(54, 162, 235, 0.2)',
-                    'rgba(255, 206, 86, 0.2)',
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(153, 102, 255, 0.2)',
-                    'rgba(255, 159, 64, 0.2)'
-                ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(255, 206, 86, 1)',
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(153, 102, 255, 1)',
-                    'rgba(255, 159, 64, 1)'
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-              responsive: false,
-              scales: {
-                  y: {
-                      beginAtZero: true
-                }
-            }
+
+/// Graph functions
+(function() {
+  window.addEventListener("load", init);
+  let summonerid_arr = [];
+
+  function init() {
+    let btn = id("button");
+    btn.addEventListener("click", summoner_id_search);
+  }
+
+
+function summoner_id_search() {
+  id("graphs").innerHTML = "";
+
+  // get data from the textbox search
+  let search_input = id("myText").value;
+  console.log(search_input);
+
+  summonerid_arr = search_input.split(",").map(item => item.trim());
+  console.log(summonerid_arr);
+
+  summonerid_arr.forEach(summoner => createGraph(summoner));
+  // createGraph("graph1");
+  // createGraph("graph2");
+
+  // Add function to plug this into riotAPI and then grab data from it
+
+  // apiService.summonerByName('na1', name).then(function(data) {
+//   console.log(data.summonerLevel);
+// });
+
+// Add function to turn data into scatterplot points:
+// data: [{
+//   x: 10,
+//   y: 20
+// }, {
+//   x: 15,
+//   y: 10
+// }]
+
+}
+
+  function createGraph(playerName) {
+    let figure = gen("figure");
+    let canvas = gen("canvas");
+    canvas.id = playerName;
+    console.log(canvas);
+    console.log(id("graphs"));
+    figure.appendChild(canvas);
+    id("graphs").appendChild(figure);
+
+  
+    const myChart = new Chart(playerName, {
+      type: 'scatter',
+      data: {
+        labels: summonerid_arr,
+        datasets: [{
+        label: '# of Votes',
+        data: [12, 19, 3, 5, 2, 3],
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
         }
+      }
     });
-   }
+    // all_charts.push(myChart);
+  
+    return myChart;
+  }
 
 
    /**

@@ -1,21 +1,59 @@
 @import url('https://fonts.googleapis.com/css2?family=Spartan&display=swap');
 /* use # for id, . for class */
 
- body, button, select, input {
+  body, button, select, input {
     font-family: "Spartan", sans-serif;
     text-align: center;
     font-size: 12pt;
+    color:#b8bfe0;
+    text-align: left;
+
+    }
+
+  body {
+    background-color: #212529;
   }
   
-  main {
+  #textbox{
+    margin-left:50px;
     display: flex;
-    align-items: flex-end;
-    flex-wrap: wrap;
-    width: 80%;
-    margin: auto;
+    align-items:flex-start;
+    flex-direction: column;
   }
 
-  #chart {
-    width: 1000px;
-    height: 1000px;
+  #myText {
+    color: black;
   }
+
+  #button {
+    color: black;
+  }
+
+  header {
+    margin: 50px;
+  }
+
+  canvas {
+    padding: 15px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+    background-color: #32325d;
+  }
+
+  figure {
+    flex-basis: 30%;
+    margin-right: 0px;
+    margin-left: 0px;
+  }
+
+  main {
+    margin-left: 50px;
+    padding-top: 20px;
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    flex-direction: row;
+    width: 100%;
+
+  }
+
