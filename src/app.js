@@ -15,7 +15,7 @@ import * as apiService from "./services/RiotAPI.js";
   window.addEventListener("load", init);
   let search_input = "";
   let labels = [];
-
+  let title = "";
 
   function init() {
 
@@ -44,43 +44,33 @@ import * as apiService from "./services/RiotAPI.js";
     console.log(search_input);
     id("graphs").innerHTML = "";
 
-
+    // Loading circle while grabbing data from API
     id("bars6").parentNode.classList.remove("hidden");
 
     let info = await apiService.getMatchesInfo("na1", search_input);  
-    
+    console.log(info);
     id("bars6").parentNode.classList.add("hidden");
 
-    console.log(info);
-
-    let arr = [];
     // total kills:
+    let arr = [];
     for (let i = 0; i < 10; i++) {
       arr.push((info.playerStats[i].kills / info.teamStats[0].objectives.champion.kills)* 100);
     }
-    // console.log(arr);
     const median = arr => {
       const mid = Math.floor(arr.length / 2),
         nums = [...arr].sort((a, b) => a - b);
       return arr.length % 2 !== 0 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2;
     };
-    // console.log(median(arr));
+
+    // Damage %
+
+    // Create the graphs!!!
 
     id("graphs").innerHTML = "";
-    createGraph(search_input, [median(arr), 100 - median(arr)], labels);
 
-    //summonerid_arr = search_input.split(",").map(item => item.trim());
-    // console.log(summonerid_arr);
+    createGraph(search_input, [median(arr), 100 - median(arr)], labels, "Kill participation");
+    createGraph(search_input, [median(arr), 100 - median(arr)], labels, "Damage % of team");
 
-    
-    // summonerid_arr.forEach(summoner => createGraph(summoner));
-    // createGraph("graph2");
-
-    // Add function to plug this into riotAPI and then grab data from it
-
-    // apiService.summonerByName('na1', name).then(function(data) {
-    //   console.log(data.summonerLevel);
-    // });  
 
   }
   console.log(search_input);
@@ -96,17 +86,19 @@ import * as apiService from "./services/RiotAPI.js";
   
   console.log(labels);
 
-  function createGraph(playerName, data, labels) {
+  function createGraph(playerName, data, labels, title) {
     shuffleArray(colors);
     let figure = gen("figure");
     let canvas = gen("canvas");
-    canvas.id = playerName;
+
+    canvas.id = title;
     console.log(canvas);
     console.log(id("graphs"));
     figure.appendChild(canvas);
+
     id("graphs").appendChild(figure);
 
-    const myChart = new Chart(playerName, {
+    const myChart = new Chart(title, {
       type: 'doughnut',
       data: {
         labels: labels,
@@ -116,10 +108,28 @@ import * as apiService from "./services/RiotAPI.js";
           backgroundColor:colors,
         }]
       },
-      
       options: {
         hoverOffset: 6,
         responsive: true,
+        plugins:{
+          title:{
+            display: true,
+            text: title,
+            color: '#adb5bd',
+            align: 'start',
+            padding: {
+              bottom: 30
+            },
+            font:{
+              size:15,
+              family: "'Spartan', sans-serif"
+            },
+          },
+
+          legend:{
+            position: 'bottom'
+          }
+        }
       }
     });
     // all_charts.push(myChart);
