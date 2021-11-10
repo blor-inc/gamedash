@@ -14,44 +14,60 @@ import * as apiService from "./services/RiotAPI.js";
 (function() {
   window.addEventListener("load", init);
   let search_input = "";
-  let player_kills = 25;
-  let team_total = 100;
-  let kill_difference = 75;
+  let labels = [search_input, "Team"]
+
 
   function init() {
+
     let btn = id("button");
     btn.addEventListener("click", summoner_id_search);
     let search_text = id("fname");
 
     search_text.addEventListener('keypress', function ( event ){
       let key = event.keyCode;
-      console.log(event);
-      console.log(key);
-      if (key === 13){
+      if (key === 32) {
+        event.preventDefault();
+      }
+      if (event.key === "Enter"){
+        event.preventDefault();
         summoner_id_search();
       }
     })
-
-    /// dont allow spaces, only type one summoner name >:((((
-    search_text.addEventListener('keypress', function( event ){
-    let key = event.keyCode;
-    if (key === 32) {
-      event.preventDefault();
-    }
-
-  })
   }
 
-
-  function summoner_id_search() {
-    id("graphs").innerHTML = "";
+  async function summoner_id_search() {
 
     // get data from the textbox search
     search_input = id("fname").value;
+    labels = labels;
+    console.log(labels);
     console.log(search_input);
+    id("graphs").innerHTML = "";
 
 
-    createGraph(search_input);
+    id("bars6").parentNode.classList.remove("hidden");
+
+    let info = await apiService.getMatchesInfo("na1", search_input);  
+    
+    id("bars6").parentNode.classList.add("hidden");
+
+    console.log(info);
+
+    let arr = [];
+    // total kills:
+    for (let i = 0; i < 10; i++) {
+      arr.push((info.playerStats[i].kills / info.teamStats[0].objectives.champion.kills)* 100);
+    }
+    // console.log(arr);
+    const median = arr => {
+      const mid = Math.floor(arr.length / 2),
+        nums = [...arr].sort((a, b) => a - b);
+      return arr.length % 2 !== 0 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2;
+    };
+    // console.log(median(arr));
+
+    id("graphs").innerHTML = "";
+    createGraph(search_input, [median(arr), 100 - median(arr)], labels);
 
     //summonerid_arr = search_input.split(",").map(item => item.trim());
     // console.log(summonerid_arr);
@@ -65,12 +81,23 @@ import * as apiService from "./services/RiotAPI.js";
     // apiService.summonerByName('na1', name).then(function(data) {
     //   console.log(data.summonerLevel);
     // });  
+
   }
+  console.log(search_input);
 
+  function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+  }
  
+  var colors = ['rgb(243, 164, 181)', 'rgb(137, 101, 224)', 'rgb(94, 114, 228)', 'rgb(0, 242, 195)']
+  
+  console.log(labels);
 
-
-  function createGraph(playerName) {
+  function createGraph(playerName, data, labels) {
+    shuffleArray(colors);
     let figure = gen("figure");
     let canvas = gen("canvas");
     canvas.id = playerName;
@@ -82,20 +109,17 @@ import * as apiService from "./services/RiotAPI.js";
     const myChart = new Chart(playerName, {
       type: 'doughnut',
       data: {
-        label: search_input,
+        labels: labels,
         datasets: [{
-        label: '# of Votes',
-        data: [12, 19, 3, 5, 2, 3],
+          label: 'Graph',
+          data: data,
+          backgroundColor:colors,
         }]
       },
-      hoverOffset: 4,
+      
       options: {
+        hoverOffset: 6,
         responsive: true,
-        scales: {
-          y: {
-            beginAtZero: true
-          }
-        }
       }
     });
     // all_charts.push(myChart);
