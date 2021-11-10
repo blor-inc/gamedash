@@ -2,7 +2,7 @@
 "use strict";
 
 const latestDataDragonVersion = "11.22.1";
-const KEY = "RGAPI-e4cad59c-5144-4c47-9dee-a86dba84d8b9";
+const KEY = "RGAPI-849b3d73-bcaf-4a99-92e3-d7a94c107218";
 const KEY_QUERY = "?api_key=" + KEY;
 
 const MAPPED_REGIONS = {"americas": ["na1", "br1", "la1", "la2", "oc1"],
