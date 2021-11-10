@@ -16,10 +16,21 @@ import * as apiService from "./services/RiotAPI.js";
   let search_input = "";
   let labels = [];
   let title = "";
-  var colors = ['rgb(243, 164, 181)', 'rgb(137, 101, 224)', 'rgb(94, 114, 228)', 'rgb(0, 242, 195)']
+  var colors = ['rgba(243, 164, 181,0.9)', 'rgba(137, 101, 224,0.9)', 'rgb(94, 114, 228,0.9)', 'rgb(0, 242, 195,0.9)']
+  var drop_region = "";
+  var new_row = "";
 
+  function new_stat(num){
+    let new_row = "row" + num;
+    let box = gen("div");
+    box.id = new_row;
+    box.classList.add("box");
+    id("graphs").append(box);
+    return new_row;
+  }
 
   function init() {
+    // createGraph("Test Graph", [50,50], ["A", "B"], "Test Graph Title")
 
     let btn = id("button");
     btn.addEventListener("click", summoner_id_search);
@@ -35,22 +46,23 @@ import * as apiService from "./services/RiotAPI.js";
         summoner_id_search();
       }
     })
-  }
+
+  }      
 
   async function summoner_id_search() {
-
     // get data from the textbox search
     search_input = id("fname").value;
     labels = [search_input, "Team"];
-    console.log(labels);
-    console.log(search_input);
+    drop_region = id("regions").value.toLowerCase();
+
+    //clear all graphs
     id("graphs").innerHTML = "";
 
     // Loading circle while grabbing data from API
     id("bars6").parentNode.classList.remove("hidden");
 
-    let info = await apiService.getMatchesInfo("na1", search_input);  
-    let damage = await apiService.getMatchesTeamDamage("na1", search_input);
+    let info = await apiService.getMatchesInfo(drop_region, search_input);  
+    let damage = await apiService.getMatchesTeamDamage(drop_region, search_input);
     console.log(damage);
 
     console.log(info);
@@ -73,22 +85,23 @@ import * as apiService from "./services/RiotAPI.js";
 
     id("graphs").innerHTML = "";
 
-    createGraph(search_input, [median(arr), 100 - median(arr)], labels, "Kill participation");
-    createGraph(search_input, [20, 80], labels, "Damage % of team");
-
+    let box1 = new_stat(1);
+    createGraph(search_input, [median(arr), 100 - median(arr)], labels, "Kill participation", box1);
+    createGraph(search_input, [20, 80], labels, "Damage % of team", box1);
+        
+    let box2 = new_stat(2);
+    createGraph("Test Graph", [50,50], ["A", "B"], "Test Graph Title", box2);
+    createGraph("Test Graph", [50,50], ["A", "B"], "Second Test Graph", box2);
   }
-  console.log(search_input);
 
   function arrayRotate(arr, reverse) {
     if (reverse) arr.unshift(arr.pop());
     else arr.push(arr.shift());
     return arr;
   }
- 
-  
-  console.log(labels);
 
-  function createGraph(playerName, data, labels, title) {
+
+  function createGraph(playerName, data, labels, title, container) {
     colors = arrayRotate(colors);
 
     let figure = gen("figure");
@@ -97,15 +110,13 @@ import * as apiService from "./services/RiotAPI.js";
     canvas.id = title;
 
     figure.appendChild(canvas);
-    
-    id("graphs").appendChild(figure);
+    id(container).appendChild(figure);
+
 
     const myChart = new Chart(title, {
       type: 'doughnut',
       data: {
         labels: labels,
-        opacity:.2,
-
         datasets: [{
           label: 'Graph',
           data: data,
@@ -116,14 +127,17 @@ import * as apiService from "./services/RiotAPI.js";
         hoverOffset: 6,
         responsive: true,
         plugins:{
+
           title:{
             display: true,
             text: title,
             color: '#adb5bd',
             align: 'start',
+
             padding: {
               bottom: 30
             },
+
             font:{
               size:15,
               family: "'Spartan', sans-serif"
@@ -131,7 +145,14 @@ import * as apiService from "./services/RiotAPI.js";
           },
 
           legend:{
-            position: 'bottom'
+            position: 'bottom',
+            labels:{
+              padding: 50,
+              font:{
+                size:15,
+                color:'white'
+              }
+            }
           }
         }
       }
