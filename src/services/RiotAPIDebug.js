@@ -3,7 +3,7 @@ import * as apiService from "./RiotAPI.js";
 // console.log(apiService.getallSummonerGames("americas", 'FelliDLGt30fA25eIDAIqgqe1qTysMVAmD4vvVhbztHoxIakFlLMpWxZxny7G_ZeN5mtab6ACdWFzw'));
 // console.log(await apiService.getMatchesInfo("na1", "nubwett"));
 // console.log(await apiService.summonerByName("na1", "nubwett"));
-console.log(await apiService.getMatchesTeamDamage("na1", "nubwett"));
+console.log(await apiService.getMatchesDmgPercentage("na1", "nubwett"));
 
 // champRotation('na1').then(function(data) {
 //   console.log(data.freeChampionIds);
