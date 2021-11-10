@@ -2,7 +2,6 @@
 "use strict";
 
 const latestDataDragonVersion = "11.22.1";
-
 const KEY = "RGAPI-acf780b1-c260-40fb-b56a-6a4454669348";
 const KEY_QUERY = "?api_key=" + KEY;
 

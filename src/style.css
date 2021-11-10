@@ -11,6 +11,11 @@
     }
 
   body {
+    display:flex;
+    min-height: 100vh;
+    flex-direction:column;
+
+    height:100%;
     background-color: #212529;
   }
   
@@ -46,7 +51,17 @@
     margin-left: 0px;
   }
 
+  #SearchDesc{
+    margin-top: 50px;
+    margin-left:50px;
+    margin-bottom: 20px;
+  }
+
+  form{
+    margin-left: 50px;
+  }
   main {
+    flex:1;
     margin-left: 50px;
     padding-top: 20px;
     display: flex;
@@ -54,6 +69,10 @@
     flex-wrap: wrap;
     flex-direction: row;
     width: 100%;
+  }
 
+  footer{
+    margin-left: 50px;
+    margin-top: auto;
   }
 
