@@ -4,8 +4,8 @@ import * as apiService from "./RiotAPI.js";
 // console.log(await apiService.getMatchesInfo("na1", "nubwett"));
 // console.log(await apiService.summonerByName("na1", "nubwett"));
 
-console.log(await apiService.getMatchesDmgPercentage("na1", "nubwett"));
-
+console.log(await apiService.getVisionScorePerMinute("na1", "nubwett"));
+console.log(await apiService.getMatchesInfo("na1", "nubwett"));
 // champRotation('na1').then(function(data) {
 //   console.log(data.freeChampionIds);
 // });

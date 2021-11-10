@@ -101,19 +101,25 @@ export async function getMatchesInfo(region, name) {
         let team = [];
         let teamPlayerStats = [];
         let json = await getMatches(region, name);
+        let gameTime = [];
         for (const matchId of json.matches) {
+            let allPlayerGameTime = []
             let response = await fetch('https://' + findGeneralRegion(region) + '.api.riotgames.com/lol/match/v5/matches/' + matchId + KEY_QUERY);
             await statusCheck(response);
             let data = await response.json();
             teamPlayerStats.push(data.info.participants);
             for (const participant of data.info.participants) {
+                allPlayerGameTime.push(participant.timePlayed);
                 if (participant.puuid === json.puuid) {
                     arr.push(participant);
                     team.push(data.info.teams[(participant.teamId / 100) - 1]);
                     break;
                 }
             }
+            let maxGameTime = Math.max.apply(Math, allPlayerGameTime);
+            gameTime.push(maxGameTime / 60);
         }
+        json["gameTime"] = gameTime;
         json["teamPlayerStats"] = teamPlayerStats;
         json["playerStats"] = arr;
         json["teamStats"] = team;
@@ -154,6 +160,21 @@ export async function getMatchesDmgPercentage(region, name) {
     }
     return gameDmg;
 
+}
+
+export async function getVisionScorePerMinute(region, name) {
+    let playerMatchData = await getMatchesInfo(region, name);
+    let visionScorePerMinute = [];
+    let visionScores = []
+    let index = 0;
+    for (const playerStat of playerMatchData.playerStats) {
+        visionScores.push(playerStat.visionScore);
+    }
+    for (const gameDuration of playerMatchData.gameTime) {
+        visionScorePerMinute.push(visionScores[index] / gameDuration);
+        index += 1;
+    }
+    return visionScorePerMinute;
 }
 
 /**
