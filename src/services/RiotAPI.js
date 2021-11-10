@@ -92,13 +92,13 @@ export async function getMatchesInfo(region, name) {
     try {
         let arr = [];
         let team = [];
-      
+        let teamPlayerStats = [];
         let json = await getMatches(region, name);
-
         for (const matchId of json.matches) {
             let response = await fetch('https://' + findGeneralRegion(region) + '.api.riotgames.com/lol/match/v5/matches/' + matchId + KEY_QUERY);
             await statusCheck(response);
             let data = await response.json();
+            teamPlayerStats.push(data.info.participants);
             for (const participant of data.info.participants) {
                 if (participant.puuid === json.puuid) {
                     arr.push(participant);
@@ -107,6 +107,7 @@ export async function getMatchesInfo(region, name) {
                 }
             }
         }
+        json["teamPlayerStats"] = teamPlayerStats;
         json["playerStats"] = arr;
         json["teamStats"] = team;
         return json;
@@ -115,63 +116,32 @@ export async function getMatchesInfo(region, name) {
     }
 }
 
-
-/**
- *
- * // https://developer.riotgames.com/apis#match-v5
- * @param {string} region americas (NA, BR, LAN, LAS, and OCE), asia (KR and JP), europe (EUNE, EUW, TR, and RU)
- * @param {string} puuid
- * @param {string} count
- * @param {string} start
- * @param {string} type
- * @param {string} startTime
- * @param {string} endTime
- * @param {string} queue
- * @returns array of match ids
- */
-export function matches(region, puuid, count, start, type, startTime, endTime, queue) {
-    let queryString ='https://' + region + '.api.riotgames.com/lol/match/v5/matches/by-puuid/' + puuid + '/ids' + KEY_QUERY;
-
-    if  (count) {queryString += '&count=' + count}else{queryString += '&count=100'};
-    if  (start) queryString += '&start=' + start;
-    if  (type) queryString += '&type=' + type;
-    if  (startTime) queryString += '&startTime=' + startTime;
-    if  (endTime) queryString += '&endTime=' + endTime;
-    if  (queue) queryString += '&queue=' + queue;
-
-    return fetch(queryString)
-        .then(resp => resp.json())
-        .catch((error) => console.warn("ERROR: ", error));
-}
-
-// regions include: americas (NA, BR, LAN, LAS, and OCE), asia (KR and JP), europe (EUNE, EUW, TR, and RU)
-// gets all match ids of a player
-export function getallSummonerGames(region, puuid) {
-    let allMatchIds = [];
-    let c = 100;
+export async function getMatchesTeamDamage(region, name) {
+    let playerMatchData = await getMatchesInfo(region, name);
+    console.log(playerMatchData);
+    let gameDmg = [];
     let index = 0;
-    let helper = function() {
-        matches(region, puuid, c, index).then(function(data) {
-            if (data.length !== 0) {
-                for (let i = 0; i < data.length; i++) {
-                    allMatchIds.push(data[i]);
-                }
-                index += data.length;
-                helper()
-            }
-        });
+    let playerTeamIds = []
+    for (const playerMatch of playerMatchData.playerStats) {
+        playerTeamIds.push(playerMatch.teamId);
     }
-    helper();
-    return allMatchIds;
+
+    for (const match of playerMatchData.teamPlayerStats) {
+        let summonerTeam = playerTeamIds[index];
+        let tally = 0;
+        for (const players of match) {
+            if (players.teamId === summonerTeam) {
+                tally += players.totalDamageDealtToChampions;
+            }
+        }
+        gameDmg.push(tally);
+        index++;
+    }
+
+    return gameDmg;
+
 }
 
-// regions include: americas (NA, BR, LAN, LAS, and OCE), asia (KR and JP), europe (EUNE, EUW, TR, and RU)
-// returns match data
-export function getMatchDetails(region, matchid) {
-    return fetch('https://' + region + '.api.riotgames.com/lol/match/v5/matches/' + matchid + KEY_QUERY)
-        .then(resp => resp.json())
-        .catch((error) => console.warn("ERROR: ", error));
-}
 
 export function getProfileIconLink(id) {
     return 'https://ddragon.leagueoflegends.com/cdn/' + latestDataDragonVersion + '/img/profileicon/' + id + '.png'
