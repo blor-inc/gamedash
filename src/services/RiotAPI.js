@@ -64,7 +64,7 @@ function findGeneralRegion(region) {
 }
 
 
-export async function getMatches(region, name) {
+async function getMatches(region, name) {
     try {
         let summonerName = await summonerByName(region, name);
 
