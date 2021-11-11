@@ -1,24 +1,22 @@
 "use strict";
 
 // Data collection from API
-import * as apiService from "./services/RiotAPI.js";
-
-// var name = "brokenpancake"
-
-// apiService.summonerByName('na1', name).then(function(data) {
-//   console.log(data.summonerLevel);
-// });
+import * as RiotAPI from "./services/RiotAPI.js";
 
 
 /// Graph functions
 (function() {
   window.addEventListener("load", init);
-  let search_input = "";
+  let searchInput = "";
   let labels = [];
   let title = "";
   var colors = ['rgba(243, 164, 181,0.9)', 'rgba(137, 101, 224,0.9)', 'rgb(94, 114, 228,0.9)', 'rgb(0, 242, 195,0.9)']
-  var drop_region = "";
+  var dropRegion = "";
   var new_row = "";
+
+  function test() {
+    RiotAPI.getUserData("na1", "phillipjuicyboy").then(console.log);
+  }
 
   function new_stat(num){
     let new_row = "row" + num;
@@ -30,6 +28,8 @@ import * as apiService from "./services/RiotAPI.js";
   }
 
   function init() {
+    test();
+
     let btn = id("button");
     btn.addEventListener("click", summoner_id_search);
     let search_text = id("fname");
@@ -40,13 +40,12 @@ import * as apiService from "./services/RiotAPI.js";
         summoner_id_search();
       }
     })
-  }      
+  }
 
   async function summoner_id_search() {
     // get data from the textbox search
-    search_input = id("fname").value.replace(/\s/g, '');
-    labels = [search_input, "Team"]; // "Team" label is slightly misleading, should express "rest of the team"
-    drop_region = id("regions").value.toLowerCase();
+    searchInput = id("fname").value.replace(/\s/g, '');
+    dropRegion = id("regions").value.toLowerCase();
 
     //clear all graphs
     id("graphs").innerHTML = "";
@@ -54,41 +53,30 @@ import * as apiService from "./services/RiotAPI.js";
     // Loading circle while grabbing data from API
     id("bars6").parentNode.classList.remove("hidden");
 
-    let info = await apiService.getMatchesInfo(drop_region, search_input);
-
-    if (!info.gamesFound) {
-      alert("No Ranked games found"); // Need better UI to signal this to user.
-    }
-
-    let dmgPercentages = await apiService.getMatchesDmgPercentage(drop_region, search_input);
-    console.log(dmgPercentages);
-
+    let info = await RiotAPI.getUserData(dropRegion, searchInput)
     console.log(info);
+
     id("bars6").parentNode.classList.add("hidden");
 
-    // array of kill percentages:
-    let killPercentages = [];
-    for (let i = 0; i < 10; i++) {
-      killPercentages.push((info.playerStats[i].kills / info.teamStats[i].objectives.champion.kills)* 100);
+    if (info.gamesFound === 0) {
+      alert("No Ranked games found"); // Need better UI to signal this to user.
+      return;
     }
-    const median = killPercentages => {
-      const mid = Math.floor(killPercentages.length / 2),
-        nums = [...killPercentages].sort((a, b) => a - b);
-      return killPercentages.length % 2 !== 0 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2;
-    };
 
-    // Damage %
     // Create the graphs!!!
-
-    id("graphs").innerHTML = "";
+    labels = [info.summoner.name, "Team"]; // "Team" label is slightly misleading, should express "rest of the team"
 
     let box1 = new_stat(1);
-    createGraph(search_input, [median(killPercentages), 100 - median(killPercentages)], labels, "Kills", box1);
-    createGraph(search_input, [median(dmgPercentages), 100 - median(dmgPercentages)], labels, "Damage", box1);
+    createGraph([info.killPercentage, 100 - info.killPercentage], labels, "Kills", box1);
+    createGraph([info.damagePercentage, 100 - info.damagePercentage], labels, "Damage", box1);
         
     let box2 = new_stat(2);
-    createGraph(search_input, [50,50], labels, "Kill Participation", box2);
-    createGraph(search_input, [50,50], labels, "Gold Farmed", box2);
+    createGraph([info.killParticipationPercentage, 100 - info.killParticipationPercentage], labels, "Kill Participation", box2);
+    createGraph([info.minionsKilledPercentage, 100 - info.minionsKilledPercentage], labels, "Minions Killed", box2);
+
+    let box3 = new_stat(3);
+    createGraph([info.visionScorePercentage, 100 - info.visionScorePercentage], labels, "Vision Score", box3);
+    createGraph([info.deathPercentage, 100 - info.deathPercentage], labels, "Deaths", box3);
   }
 
   function arrayRotate(arr, reverse) {
@@ -98,8 +86,8 @@ import * as apiService from "./services/RiotAPI.js";
   }
 
 
-  function createGraph(playerName, data, labels, title, container) {
-    colors = arrayRotate(colors);
+  function createGraph(data, labels, title, container) {
+    // colors = arrayRotate(colors);
 
     let figure = gen("figure");
     let canvas = gen("canvas");
