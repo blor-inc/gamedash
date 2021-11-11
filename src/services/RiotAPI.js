@@ -1,6 +1,6 @@
 "use strict";
 
-const latestDataDragonVersion = "11.22.1";
+const LATEST_DATA_DRAGON_VERSION = "11.22.1";
 
 const KEY = "RGAPI-38a9c896-4504-415f-b917-2b3221ed5434";
 const KEY_QUERY = "?api_key=" + KEY;
@@ -59,6 +59,8 @@ export async function getUserData(region, summonerName) {
     resultObj["visionScorePerMinute"] = getVisionScorePerMinute(gameStats.playerStats, gameStats.gameTimes);
 
     resultObj["visionScorePercentage"] = getVisionScorePercentage(gameStats.playerStats, gameStats.teamPlayerStats, gameStats.teamStats);
+
+    resultObj["profileIconLink"] = getProfileIconLink(summoner.profileIcondId);
 
     return resultObj;
 }
@@ -402,11 +404,8 @@ function getDeathPercentage(playerStats, teamPlayerStats, teamStats) {
  * @param {string} name 
  * @returns object with profileIconLink and summonerLevel
  */
-function getProfileInfo(profileIcondId) {
-    let id = profileIcondId;
-    let profileIconLink ='https://ddragon.leagueoflegends.com/cdn/' + latestDataDragonVersion + '/img/profileicon/' + id + '.png';
-    let summonerLevel = summonerInfo.summonerLevel;
-    return {"profileIconLink": profileIconLink, "summonerLevel": summonerLevel};
+function getProfileIconLink(profileIcondId) {
+    return 'https://ddragon.leagueoflegends.com/cdn/' + LATEST_DATA_DRAGON_VERSION + '/img/profileicon/' + profileIcondId + '.png';
 }
 
 /**
