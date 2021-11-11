@@ -3,12 +3,18 @@
 
 const latestDataDragonVersion = "11.22.1";
 
-const KEY = "RGAPI-6f772905-6ec9-4553-bd22-c3ff6fc23f69";
+const KEY = "RGAPI-70ff85bc-7174-4863-8fe8-3bd682838bcd";
 const KEY_QUERY = "?api_key=" + KEY;
 
 const MAPPED_REGIONS = {"americas": ["na1", "br1", "la1", "la2", "oc1"],
                         "asia": ["kr", "jp1"],
                         "europe": ["eun1", "euw1", "tr1", "ru"]};
+
+// This prevents something called preflight requests which can cause CORS errors. 
+// GET requests encourages simple requests and tries to avoid CORS policy blocked errors.
+const REQUEST_OPTIONS = {
+    method: 'GET', 
+}
 
 /**
  * Example API (check if it works)
@@ -19,7 +25,7 @@ const MAPPED_REGIONS = {"americas": ["na1", "br1", "la1", "la2", "oc1"],
  * @returns maxNewPlayerLevel, freeChampionIdsForNewPlayers, freeChampionIds
  */
 export function champRotation(region) {
-    return fetch('https://' + region + '.api.riotgames.com/lol/platform/v3/champion-rotations?api_key=' + KEY_QUERY)
+    return fetch('https://' + region + '.api.riotgames.com/lol/platform/v3/champion-rotations?api_key=' + KEY_QUERY, REQUEST_OPTIONS)
         .then(resp => resp.json())
         .catch((error) => console.warn("ERROR: ", error));
 }
@@ -33,7 +39,7 @@ export function champRotation(region) {
 async function summonerByName(region, name) {
 
     try {
-      let response = await fetch('https://' + region + '.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + name + KEY_QUERY);
+      let response = await fetch('https://' + region + '.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + name + KEY_QUERY, REQUEST_OPTIONS);
       await statusCheck(response);
       let data = await response.json();
       return {"name": name, "puuid": data.puuid};
@@ -62,7 +68,7 @@ function findGeneralRegion(region) {
  *
  * @param {string} region
  * @param {string} name
- * @returns the match data of last 10 games, summoner name, and summoner puuid
+ * @returns the match data of last 10 ranked games, summoner name, and summoner puuid
  */
 async function getMatches(region, name) {
     try {
@@ -76,7 +82,7 @@ async function getMatches(region, name) {
         queryString += "&count=" + count;
         queryString += "&type=" + type;
 
-        let response = await fetch(queryString);
+        let response = await fetch(queryString, REQUEST_OPTIONS);
         await statusCheck(response);
         let data = await response.json();
 
@@ -101,6 +107,7 @@ export async function getMatchesInfo(region, name) {
         let team = [];
         let teamPlayerStats = [];
         let json = await getMatches(region, name);
+        json["gamesFound"] = !(json.matches.length === 0)
         let gameTime = [];
         for (const matchId of json.matches) {
             let allPlayerGameTime = []
