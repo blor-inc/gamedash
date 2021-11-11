@@ -30,28 +30,21 @@ import * as apiService from "./services/RiotAPI.js";
   }
 
   function init() {
-    // createGraph("Test Graph", [50,50], ["A", "B"], "Test Graph Title")
-
     let btn = id("button");
     btn.addEventListener("click", summoner_id_search);
     let search_text = id("fname");
 
     search_text.addEventListener('keypress', function ( event ){
-      let key = event.keyCode;
-      if (key === 32) {
-        event.preventDefault();
-      }
       if (event.key === "Enter"){
         event.preventDefault();
         summoner_id_search();
       }
     })
-
   }      
 
   async function summoner_id_search() {
     // get data from the textbox search
-    search_input = id("fname").value;
+    search_input = id("fname").value.replace(/\s/g, '');
     labels = [search_input, "Team"]; // "Team" label is slightly misleading, should express "rest of the team"
     drop_region = id("regions").value.toLowerCase();
 
