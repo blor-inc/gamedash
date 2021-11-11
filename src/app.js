@@ -44,6 +44,7 @@ import * as RiotAPI from "./services/RiotAPI.js";
 
   async function summoner_id_search() {
     // get data from the textbox search
+    id("404error").style.display="none";
     searchInput = id("fname").value.replace(/\s/g, '');
     dropRegion = id("regions").value.toLowerCase();
 
@@ -55,28 +56,33 @@ import * as RiotAPI from "./services/RiotAPI.js";
 
     let info = await RiotAPI.getUserData(dropRegion, searchInput)
     console.log(info);
-
     id("bars6").parentNode.classList.add("hidden");
+    if (info === "error") {
+      id("404error").style.display="block";
 
-    if (info.gamesFound === 0) {
-      alert("No Ranked games found"); // Need better UI to signal this to user.
-      return;
+    } else {
+
+      if (info.gamesFound === 0) {
+        alert("No Ranked games found"); // Need better UI to signal this to user.
+        return;
+      }
+      id("profileIMG").src = info.profileIconLink;
+      id("profileIMG").style.display="block";
+      // Create the graphs!!!
+      labels = [info.summoner.name, "Team"]; // "Team" label is slightly misleading, should express "rest of the team"
+  
+      let box1 = new_stat(1);
+      createGraph([info.killPercentage, 100 - info.killPercentage], labels, "Kills", box1);
+      createGraph([info.damagePercentage, 100 - info.damagePercentage], labels, "Damage", box1);
+          
+      let box2 = new_stat(2);
+      createGraph([info.killParticipationPercentage, 100 - info.killParticipationPercentage], labels, "Kill Participation", box2);
+      createGraph([info.minionsKilledPercentage, 100 - info.minionsKilledPercentage], labels, "Minions Killed", box2);
+  
+      let box3 = new_stat(3);
+      createGraph([info.visionScorePercentage, 100 - info.visionScorePercentage], labels, "Vision Score", box3);
+      createGraph([info.deathPercentage, 100 - info.deathPercentage], labels, "Deaths", box3);
     }
-
-    // Create the graphs!!!
-    labels = [info.summoner.name, "Team"]; // "Team" label is slightly misleading, should express "rest of the team"
-
-    let box1 = new_stat(1);
-    createGraph([info.killPercentage, 100 - info.killPercentage], labels, "Kills", box1);
-    createGraph([info.damagePercentage, 100 - info.damagePercentage], labels, "Damage", box1);
-        
-    let box2 = new_stat(2);
-    createGraph([info.killParticipationPercentage, 100 - info.killParticipationPercentage], labels, "Kill Participation", box2);
-    createGraph([info.minionsKilledPercentage, 100 - info.minionsKilledPercentage], labels, "Minions Killed", box2);
-
-    let box3 = new_stat(3);
-    createGraph([info.visionScorePercentage, 100 - info.visionScorePercentage], labels, "Vision Score", box3);
-    createGraph([info.deathPercentage, 100 - info.deathPercentage], labels, "Deaths", box3);
   }
 
   function arrayRotate(arr, reverse) {
