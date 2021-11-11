@@ -45,7 +45,6 @@ import * as RiotAPI from "./services/RiotAPI.js";
   async function summoner_id_search() {
     // get data from the textbox search
     searchInput = id("fname").value.replace(/\s/g, '');
-    labels = [searchInput, "Team"]; // "Team" label is slightly misleading, should express "rest of the team"
     dropRegion = id("regions").value.toLowerCase();
 
     //clear all graphs
@@ -65,18 +64,19 @@ import * as RiotAPI from "./services/RiotAPI.js";
     }
 
     // Create the graphs!!!
+    labels = [info.summoner.name, "Team"]; // "Team" label is slightly misleading, should express "rest of the team"
 
     let box1 = new_stat(1);
-    createGraph(searchInput, [info.killPercentage, 100 - info.killPercentage], labels, "Kills", box1);
-    createGraph(searchInput, [info.damagePercentage, 100 - info.damagePercentage], labels, "Damage", box1);
+    createGraph([info.killPercentage, 100 - info.killPercentage], labels, "Kills", box1);
+    createGraph([info.damagePercentage, 100 - info.damagePercentage], labels, "Damage", box1);
         
     let box2 = new_stat(2);
-    createGraph(searchInput, [info.killParticipationPercentage, 100 - info.killParticipationPercentage], labels, "Kill Participation", box2);
-    createGraph(searchInput, [info.minionsKilledPercentage, 100 - info.minionsKilledPercentage], labels, "Minions Killed", box2);
+    createGraph([info.killParticipationPercentage, 100 - info.killParticipationPercentage], labels, "Kill Participation", box2);
+    createGraph([info.minionsKilledPercentage, 100 - info.minionsKilledPercentage], labels, "Minions Killed", box2);
 
     let box3 = new_stat(3);
-    createGraph(searchInput, [info.visionScorePercentage, 100 - info.visionScorePercentage], labels, "Vision Score", box3);
-    createGraph(searchInput, [info.deathPercentage, 100 - info.deathPercentage], labels, "Deaths", box3);
+    createGraph([info.visionScorePercentage, 100 - info.visionScorePercentage], labels, "Vision Score", box3);
+    createGraph([info.deathPercentage, 100 - info.deathPercentage], labels, "Deaths", box3);
   }
 
   function arrayRotate(arr, reverse) {
@@ -86,8 +86,8 @@ import * as RiotAPI from "./services/RiotAPI.js";
   }
 
 
-  function createGraph(playerName, data, labels, title, container) {
-    colors = arrayRotate(colors);
+  function createGraph(data, labels, title, container) {
+    // colors = arrayRotate(colors);
 
     let figure = gen("figure");
     let canvas = gen("canvas");
