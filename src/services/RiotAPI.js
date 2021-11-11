@@ -36,13 +36,14 @@ export function champRotation(region) {
  * @param {string} name
  * @returns object with summoner name and puuid.
  */
-async function summonerByName(region, name) {
-
+export async function summonerByName(region, name) {
     try {
-      let response = await fetch('https://' + region + '.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + name + KEY_QUERY, REQUEST_OPTIONS);
-      await statusCheck(response);
-      let data = await response.json();
-      return {"name": name, "puuid": data.puuid};
+        let response = await fetch('https://' + region + '.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + name + KEY_QUERY, REQUEST_OPTIONS);
+        await statusCheck(response);
+        let data = await response.json();
+        console.log(data);
+        return {"name": name, "puuid": data.puuid, 
+            "profileIcondId": data.profileIconId, "summonerLevel": data.summonerLevel};
     } catch(e) {
         return "Error: Could not find player name";
     }
@@ -169,6 +170,12 @@ export async function getMatchesDmgPercentage(region, name) {
 
 }
 
+/**
+ * 
+ * @param {string} region 
+ * @param {string} name 
+ * @returns array of vision score per minute 0 index is the most recent ranked game
+ */
 export async function getVisionScorePerMinute(region, name) {
     let playerMatchData = await getMatchesInfo(region, name);
     let visionScorePerMinute = [];
@@ -183,14 +190,18 @@ export async function getVisionScorePerMinute(region, name) {
     }
     return visionScorePerMinute;
 }
-
 /**
- *
- * @param {string} id
- * @returns The link for league profile icon
+ * 
+ * @param {string} region 
+ * @param {string} name 
+ * @returns object with profileIconLink and summonerLevel
  */
-export function getProfileIconLink(id) {
-    return 'https://ddragon.leagueoflegends.com/cdn/' + latestDataDragonVersion + '/img/profileicon/' + id + '.png'
+export async function getProfileInfo(region, name) {
+    let summonerInfo = await summonerByName(region, name);
+    let id = summonerInfo.profileIcondId;
+    let profileIconLink ='https://ddragon.leagueoflegends.com/cdn/' + latestDataDragonVersion + '/img/profileicon/' + id + '.png';
+    let summonerLevel = summonerInfo.summonerLevel;
+    return {"profileIconLink": profileIconLink, "summonerLevel": summonerLevel};
 }
 
 /**
