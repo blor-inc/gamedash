@@ -52,7 +52,7 @@ import * as apiService from "./services/RiotAPI.js";
   async function summoner_id_search() {
     // get data from the textbox search
     search_input = id("fname").value;
-    labels = [search_input, "Team"];
+    labels = [search_input, "Team"]; // "Team" label is slightly misleading, should express "rest of the team"
     drop_region = id("regions").value.toLowerCase();
 
     //clear all graphs
@@ -61,37 +61,41 @@ import * as apiService from "./services/RiotAPI.js";
     // Loading circle while grabbing data from API
     id("bars6").parentNode.classList.remove("hidden");
 
-    let info = await apiService.getMatchesInfo(drop_region, search_input);  
-    let damage = await apiService.getMatchesDmgPercentage(drop_region, search_input);
-    console.log(damage);
+    let info = await apiService.getMatchesInfo(drop_region, search_input);
+
+    if (!info.gamesFound) {
+      alert("No Ranked games found"); // Need better UI to signal this to user.
+    }
+
+    let dmgPercentages = await apiService.getMatchesDmgPercentage(drop_region, search_input);
+    console.log(dmgPercentages);
 
     console.log(info);
     id("bars6").parentNode.classList.add("hidden");
 
-    // total kills:
-    let arr = [];
+    // array of kill percentages:
+    let killPercentages = [];
     for (let i = 0; i < 10; i++) {
-      arr.push((info.playerStats[i].kills / info.teamStats[0].objectives.champion.kills)* 100);
+      killPercentages.push((info.playerStats[i].kills / info.teamStats[i].objectives.champion.kills)* 100);
     }
-    const median = arr => {
-      const mid = Math.floor(arr.length / 2),
-        nums = [...arr].sort((a, b) => a - b);
-      return arr.length % 2 !== 0 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2;
+    const median = killPercentages => {
+      const mid = Math.floor(killPercentages.length / 2),
+        nums = [...killPercentages].sort((a, b) => a - b);
+      return killPercentages.length % 2 !== 0 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2;
     };
 
     // Damage %
-
     // Create the graphs!!!
 
     id("graphs").innerHTML = "";
 
     let box1 = new_stat(1);
-    createGraph(search_input, [median(arr), 100 - median(arr)], labels, "Kill participation", box1);
-    createGraph(search_input, [20, 80], labels, "Damage % of team", box1);
+    createGraph(search_input, [median(killPercentages), 100 - median(killPercentages)], labels, "Kills", box1);
+    createGraph(search_input, [median(dmgPercentages), 100 - median(dmgPercentages)], labels, "Damage", box1);
         
     let box2 = new_stat(2);
-    createGraph("Test Graph", [50,50], ["A", "B"], "Test Graph Title", box2);
-    createGraph("Test Graph", [50,50], ["A", "B"], "Second Test Graph", box2);
+    createGraph(search_input, [50,50], labels, "Kill Participation", box2);
+    createGraph(search_input, [50,50], labels, "Gold Farmed", box2);
   }
 
   function arrayRotate(arr, reverse) {
