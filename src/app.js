@@ -62,7 +62,7 @@ import * as apiService from "./services/RiotAPI.js";
     id("bars6").parentNode.classList.remove("hidden");
 
     let info = await apiService.getMatchesInfo(drop_region, search_input);  
-    let damage = await apiService.getMatchesTeamDamage(drop_region, search_input);
+    let damage = await apiService.getMatchesDmgPercentage(drop_region, search_input);
     console.log(damage);
 
     console.log(info);
