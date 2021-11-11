@@ -386,9 +386,6 @@ function getDeathPercentage(playerStats, teamPlayerStats, teamStats) {
         teamDeaths.push(teamDeath);
     }
 
-    console.log(playerDeaths);
-    console.log(teamDeaths);
-
     let percentages = [];
     for (let i = 0; i < playerDeaths.length; i++) {
         if (teamDeaths[i] !== 0) {
