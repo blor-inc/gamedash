@@ -16,17 +16,17 @@ import * as RiotAPI from "./services/RiotAPI.js";
     // RiotAPI.getUserData("na1", "nubwett").then(console.log);
 
     // graph test
-    let box10 = newStat(10);
-    createGraph([25, 75], ["A", "B"], "Test Test Test", box10, colors.slice(0,2));
-    createGraph([25, 75], ["A", "B"], "Test Again", box10, colors.slice(0,2));
+    // let box10 = newStat(10);
+    // createGraph([25, 75], ["A", "B"], "Test Test Test", box10, colors.slice(0,2));
+    // createGraph([25, 75], ["A", "B"], "Test Again", box10, colors.slice(0,2));
 
-    const score1 = getKSScore(25, 25);
-    break_line();
+    // const score1 = getKSScore(25, 25);
+    // break_line();
 
-    let box11 = newStat(11);
-    createGraph([25, 75], ["A", "B"], "Another Test", box11, colors.slice(0,2));
-    break_line();
-    createCard(score1, "Test Stat", "alskjdflasjflkasjdflajsdlfjalsdfjalsdfjalsdkjf", box11);
+    // let box11 = newStat(11);
+    // createGraph([25, 75], ["A", "B"], "Another Test", box11, colors.slice(0,2));
+    // break_line();
+    // createCard(score1, "Test Stat", "alskjdflasjflkasjdflajsdlfjalsdfjalsdfjalsdkjf", box11);
 
 
     // score test
@@ -106,10 +106,10 @@ import * as RiotAPI from "./services/RiotAPI.js";
     let figure = gen("figure");
     figure.appendChild(p);
 
-    p.innerHTML = name + " Score: " + score + "/10\n\n"  + "<i>\""+ comment + "\"</i>";
+    p.innerHTML = "<h3>" + name + " Score: " + score + "/10\n\n"  + "</h3> " + comment ;
+
     id(container).appendChild(figure);
   }
-
 
   // Look up summoner name in API
   
@@ -155,7 +155,7 @@ import * as RiotAPI from "./services/RiotAPI.js";
       // id("summonerLVL").style.display = "block";
 
       // Create the graphs!!!
-      labels = [info.summoner.name + " (%)", "teammates (%)"];
+      labels = [" " + info.summoner.name + " (%)", " Teammates (%)"];
 
       let box1 = newStat(1);
       createGraph([info.killPercentage, 100 - info.killPercentage], labels, "Average % Kills", box1, colors.slice(0,2));
@@ -192,42 +192,57 @@ import * as RiotAPI from "./services/RiotAPI.js";
   }
 
   function getKSComment(score) {
+    let desc = "<br> This score weighs your kills per game and damage contribuation to your team. The less damage you do compared to your kills, the more effective you are at securing kills. <br><br><h6>Data is collected over the last 10 ranked games.</h6>";
+    let br_i = "<br><i>\"";
+    let i_end = "\"</i><br>";
     if (score < 4) {
-      return "What a generous soul...";
+      return br_i + "What a generous soul..." + i_end + desc;
     } else if (score < 7) {
-      return "Just takes what they deserve, more or less.";
+      return br_i + "Just takes what they deserve, more or less." + i_end + desc;
     } else {
-      return "Thief, burglar, dare I say degenerate.";
+      return br_i + "Thief, burglar, dare I say degenerate." + i_end + desc;
     }
   }
 
   function getFarmComment(score) {
+    let desc = "<br> Comparing your kill participation and your minion kills, the greater the discrepancy, the more likely it is you would rather farm minions during your games. <br><br><h6>Data is collected over the last 10 ranked games.</h6>";
+    let br_i = "<br><i>\"";
+    let i_end = "\"</i><br>";
+
     if (score < 4) {
-      return "Minions are friends, not food.";
+      return br_i + "Minions are friends, not food." + i_end + desc;
     } else if (score < 7) {
-      return "Financially and fiscally responsible."
+      return br_i + "Financially and fiscally responsible." + i_end + desc;
     } else {
-      return "Can't tell minions and champions apart.";
+      return br_i + "Can't tell minions and champions apart." + i_end + desc;
     }
   }
 
   function getGrayComment(score, deathPercent) {
+    let desc = "<br> As your contribution to your team's total deaths and your average time spent out of action increases, so does your gray screen score. <br><br><h6>Data is collected over the last 10 ranked games.</h6>";
+    let br_i = "<br><i>\"";
+    let i_end = "\"</i><br>";
+
     if (score < 4) {
-      return "Enjoys being alive.";
+      return br_i + "Enjoys being alive." + i_end + desc;
     } else if (score < 7) {
-      return "Sometimes the screen goes dark. Not sure why."
+      return br_i + "Sometimes the screen goes dark. Not sure why." + i_end + desc;
     } else {
-      return "Imagine being dead " + deathPercent + "% of the game.";
+      return br_i + "Imagine being dead " + deathPercent + "% of the game." + i_end + desc;
     }
   }
 
   function getVisionComment(score) {
+    let desc = "<br> Having a high average vision score percentage of your team and a high number of wards placed increases your visionary score. <br><br><br><h6>Data is collected over the last 10 ranked games.</h6>";
+    let br_i = "<br><i>\"";
+    let i_end = "\"</i><br>";
+
     if (score < 4) {
-      return "Plays with their eyes closed.";
+      return br_i + "Plays with their eyes closed." + i_end + desc;
     } else if (score < 7) {
-      return "Brings a flashlight when camping. Appropriate."
+      return br_i + "Brings a flashlight when camping. Appropriate." + i_end + desc;
     } else {
-      return "Certified ten thousand lumens.";
+      return br_i + "Certified ten thousand lumens." + i_end + desc;
     }
   }
 
@@ -296,7 +311,12 @@ import * as RiotAPI from "./services/RiotAPI.js";
         }]
       },
       options: {
-        hoverOffset: 6,
+        layout:{
+          padding:{
+            bottom: 15
+          }
+        },
+        hoverOffset: 20,
         responsive: true,
         plugins:{
           tooltip: {
