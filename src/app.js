@@ -9,19 +9,38 @@ import * as RiotAPI from "./services/RiotAPI.js";
   window.addEventListener("load", init);
   let searchInput = "";
   let labels = [];
-  let title = "";
-
   var colors = ['rgb(255, 214, 132, 1)', 'rgb(94, 72, 200,1)', 'rgb(255, 214, 132, 1)',  'rgba(74, 99, 231,1)', 'rgb(255, 214, 132, 1)', 'rgba(247, 84, 84,1)']
 
-  var new_row = "";
-
   function test() {
-    // RiotAPI.getUserData("na1", "phillipjuicyboy").then(console.log);
-    let box3 = new_stat(1);
-    createGraph([23, 100-23], ["A", "B"], "Test Test", box3, colors.slice(0,2));
+    // API test
+    // RiotAPI.getUserData("na1", "nubwett").then(console.log);
+
+    // score test
+    // for (let v = -10; v < 15; v += 0.1) {
+    //   console.log(v + ' ' + getKSScore(10 + v, 10));
+    // }
+
+    // farmer test
+    // for (let kp = 35; kp < 75; kp++) {
+    //   for (let m = 10; m < 50; m++) {
+    //     console.log('kp:' + kp + ', m:' + m + ', score:' + getAFKFarmingScore(kp, m));
+    //   }
+    // }
+
+    // gray screen gamer test
+    // for (let d = 0; d < 50; d++) {
+    //   for (let t = 0; t < 25; t++) {
+    //     console.log('d:' + d + ', t:' + t + ', score:' + getGrayScreenScore(d, t));
+    //   }
+    // }
+
+    // vision test
+    // for (let v = 20; v < 90; v += 1) {
+    //   console.log(v + ' ' + getVisionaryScore(v - 10, 10));
+    // }
   }
 
-  function new_stat(num){
+  function newStat(num){
     let new_row = "row" + num;
     let box = gen("div");
     box.id = new_row;
@@ -88,60 +107,62 @@ import * as RiotAPI from "./services/RiotAPI.js";
         return;
       }
       
-      // id("profileIMG").src = info.profileIconLink;
-      // id("profileIMG").style.display="block";
+      id("profileIMG").src = info.profileIconLink;
+      id("profileIMG").style.display="block";
+
       // Create the graphs!!!
-      labels = [info.summoner.name, "Teammates"]; // "Team" label is slightly misleading, should express "rest of the team"
+      labels = [info.summoner.name + " (%)", "Team (%)"];
 
-      let box1 = new_stat(1);
-      createGraph([info.killPercentage, 100 - info.killPercentage], labels, "% Kills of Team", box1, colors.slice(0,2));
-      createGraph([info.damagePercentage, 100 - info.damagePercentage], labels, "% Damage of Team", box1, colors.slice(0,2));
-      let p1 = gen("p");
-      p1.textContent = "KS status: "
-      
-      if (info.killPercentage - info.damagePercentage >= 8) {
-        p1.textContent += "You dirty kser";
-      } else {
-        p1.textContent += "What a team player!"
-      }
-      id("row1").appendChild(p1);
+      let box1 = newStat(1);
+      createGraph([info.killPercentage, 100 - info.killPercentage], labels, "Kills", box1, colors.slice(0,2));
+      createGraph([info.damagePercentage, 100 - info.damagePercentage], labels, "Damage", box1, colors.slice(0,2));
+      const score1 = getKSScore(info.killPercentage, info.damagePercentage);
+      createCard(score1, "Kill Security", box1);
 
-      let box2 = new_stat(2);
-      createGraph([info.killParticipationPercentage, 100 - info.killParticipationPercentage], labels, "% Kill Participation", box2, colors.slice(2,4));
-      createGraph([info.minionsKilledPercentage, 100 - info.minionsKilledPercentage], labels, "% Minions Killed of Team", box2, colors.slice(2,4));
+      let box2 = newStat(2);
+      createGraph([info.killParticipationPercentage, 100 - info.killParticipationPercentage], labels, "Kill Participation", box2, colors.slice(2,4));
+      createGraph([info.minionsKilledPercentage, 100 - info.minionsKilledPercentage], labels, "Minions Killed", box2, colors.slice(2,4));
+      const score2 = getAFKFarmingScore(info.killParticipationPercentage, info.minionsKilledPercentage);
+      createCard(score2, "AFK Farming", box2);
 
-      let p2 = gen("p");
-      p2.textContent = "Farmer status: "
-      if (info.killParticipationPercentage - info.minionsKilledPercentage <= 10) {
-        p2.textContent += "Drop the minions and go help your team!";
-      } else {
-        p2.textContent += "What a team player!"
-      }
-      id("row2").appendChild(p2);
+      let box3 = newStat(3);
+      createGraph([info.deathPercentage, 100 - info.deathPercentage], labels, "Deaths", box3, colors.slice(4,6));
+      createGraph([info.timeSpentDeadPercentage, 100 - info.timeSpentDeadPercentage], ["Dead (%)", "Alive (%)"], "Time Spent Dead", box3, colors.slice(4,6));
+      const score3 = getGrayScreenScore(info.deathPercentage, info.timeSpentDeadPercentage);
+      createCard(score3, "Gray Screen Gaming", box3);
 
-      let box3 = new_stat(3);
-      createGraph([info.visionScorePercentage, 100 - info.visionScorePercentage], labels, "% Vision Score of Team", box3, colors.slice(4,6));
-      createGraph([info.deathPercentage, 100 - info.deathPercentage], labels, "% Deaths", box3, colors.slice(4,6));
-
-      let p3 = gen("p");
-      p3.textContent = "Vision Status: "
-      if (info.visionScorePercentage < 20) {
-        p3.textContent += "Get some wards in your system!";
-      } else {
-        p3.textContent += "What a team player!"
-      }
-      p3.textContent += "\r\n";
-      p3.textContent += "Feeder Status: "
-      
-      if (info.deathPercentage >= 23) {
-        p3.textContent += "Slow down on the dying!";
-      } else {
-        p3.textContent += "What a team player!"
-      }
-      
-      id("row3").appendChild(p3);
+      let box4 = newStat(4);
+      createGraph([info.visionScorePercentage, 100 - info.visionScorePercentage], labels, "Vision Score", box4, colors.slice(0,2));
+      createGraph([info.visionWardsPlacedPercentage, 100 - info.visionWardsPlacedPercentage], labels, "Vision Wards Placed", box4, colors.slice(0,2));
+      const score4 = getVisionaryScore(info.visionScorePercentage, info.visionWardsPlacedPercentage);
+      createCard(score4, "Visionary", box4);
     }
 
+  }
+
+  // scores are tuned by experimentation, see test()
+
+  function getKSScore(k, d) {
+    const v = k - d;
+    return (boundVal(v * 4 + 40, 0, 100) / 10).toFixed(1); 
+  }
+
+  function getAFKFarmingScore(kp, m) {
+    const v = m - kp / 2;
+    return boundVal(v / 3 + 3, 0, 10).toFixed(1);
+  }
+
+  function getGrayScreenScore(d, t) {
+    return boundVal((d + t * t * t) / 200, 0, 10).toFixed(1);
+  }
+
+  function getVisionaryScore(s, w) {
+    const v = s + w;
+    return boundVal(v / 8, 0, 10).toFixed(1);
+  }
+
+  function boundVal(v, low, high) {
+    return Math.max(Math.min(v, high), low);
   }
 
   function arrayRotate(arr, reverse) {
@@ -150,6 +171,15 @@ import * as RiotAPI from "./services/RiotAPI.js";
     return arr;
   }
 
+  function normalizeVal(val, oldMin, oldMax, newMin, newMax) {
+    return (((val - oldMin) * (newMax - newMin)) / (oldMax - oldMin)) + newMin
+  }
+
+  function createCard(score, name, container) {
+    let p = gen("p");
+    p.textContent = name + " Score: " + score + "/10";
+    id(container).appendChild(p);
+  }
 
   function createGraph(data, labels, title, htmlContainer, color) {
     // Data: array length 2 of two percentages
@@ -216,9 +246,6 @@ import * as RiotAPI from "./services/RiotAPI.js";
         }
       }
     });
-    // all_charts.push(myChart);
-
-    return myChart;
   }
 
 
