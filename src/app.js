@@ -192,7 +192,7 @@ import * as RiotAPI from "./services/RiotAPI.js";
   }
 
   function getKSComment(score) {
-    let desc = "<br> This score weighs your kills per game and damage contribuation to your team. The less damage you do compared to your kills, the more effective you are at securing kills. <br><br><h6>Data is collected over the last 10 ranked games.</h6>";
+    let desc = "<br>This score weighs your kills per game and damage contribution to your team. The less damage you do compared to your kills, the more effective you are at securing kills.<br><br><h6>Data is collected over the last 10 ranked games.</h6>";
     let br_i = "<br><i>\"";
     let i_end = "\"</i><br>";
     if (score < 4) {
@@ -205,7 +205,7 @@ import * as RiotAPI from "./services/RiotAPI.js";
   }
 
   function getFarmComment(score) {
-    let desc = "<br> Comparing your kill participation and your minion kills, the greater the discrepancy, the more likely it is you would rather farm minions during your games. <br><br><h6>Data is collected over the last 10 ranked games.</h6>";
+    let desc = "<br>The lower your kill participation and the higher your minion kills, the more likely it is you would rather farm minions during your games.<br><br><h6>Data is collected over the last 10 ranked games.</h6>";
     let br_i = "<br><i>\"";
     let i_end = "\"</i><br>";
 
@@ -219,7 +219,7 @@ import * as RiotAPI from "./services/RiotAPI.js";
   }
 
   function getGrayComment(score, deathPercent) {
-    let desc = "<br> As your contribution to your team's total deaths and your average time spent out of action increases, so does your gray screen score. <br><br><h6>Data is collected over the last 10 ranked games.</h6>";
+    let desc = "<br>As your contribution to your team's total deaths and your average time spent out of action increases, so does your gray screen score.<br><br><h6>Data is collected over the last 10 ranked games.</h6>";
     let br_i = "<br><i>\"";
     let i_end = "\"</i><br>";
 
@@ -233,7 +233,7 @@ import * as RiotAPI from "./services/RiotAPI.js";
   }
 
   function getVisionComment(score) {
-    let desc = "<br> Having a high average vision score percentage of your team and a high number of wards placed increases your visionary score. <br><br><h6>Data is collected over the last 10 ranked games.</h6>";
+    let desc = "<br>Having a high average vision score percentage of your team and a high number of wards placed increases your visionary score.<br><br><h6>Data is collected over the last 10 ranked games.</h6>";
     let br_i = "<br><i>\"";
     let i_end = "\"</i><br>";
 
