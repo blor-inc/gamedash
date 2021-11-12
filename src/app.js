@@ -160,7 +160,7 @@ import * as RiotAPI from "./services/RiotAPI.js";
     } else if (score < 7) {
       return "Sometimes the screen goes dark. Not sure why."
     } else {
-      return "Imagine being dead " + deathPercent + "% of the time";
+      return "Imagine being dead " + deathPercent + "% of the game.";
     }
   }
 
