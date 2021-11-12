@@ -9,11 +9,23 @@ import * as RiotAPI from "./services/RiotAPI.js";
   window.addEventListener("load", init);
   let searchInput = "";
   let labels = [];
-  var colors = ['rgb(255, 214, 132, 1)', 'rgb(94, 72, 200,1)', 'rgb(255, 214, 132, 1)',  'rgba(74, 99, 231,1)', 'rgb(255, 214, 132, 1)', 'rgba(247, 84, 84,1)']
+  var colors = ['rgb(255, 214, 132, 1)', 'rgb(94, 72, 200,1)', 'rgb(255, 214, 132, 1)',  'rgba(74, 99, 231,1)', 'rgb(255, 214, 132, 1)', 'rgba(117, 50, 133,1)', 'rgb(255, 214, 132, 1)', 'rgba(17, 157, 164, 1)']
 
   function test() {
     // API test
     // RiotAPI.getUserData("na1", "nubwett").then(console.log);
+
+    // graph test
+    let box10 = newStat(10);
+    createGraph([25, 75], ["A", "B"], "Test Test Test", box10, colors.slice(0,2));
+    const score1 = getKSScore(25, 25);
+    break_line();
+
+    let box11 = newStat(11);
+    createGraph([25, 75], ["A", "B"], "Another Test", box11, colors.slice(0,2));
+    break_line();
+    createCard(score1, "Test Stat", "", box11);
+    
 
     // score test
     // for (let v = -10; v < 15; v += 0.1) {
@@ -40,14 +52,7 @@ import * as RiotAPI from "./services/RiotAPI.js";
     // }
   }
 
-  function newStat(num){
-    let new_row = "row" + num;
-    let box = gen("div");
-    box.id = new_row;
-    box.classList.add("box");
-    id("graphs").append(box);
-    return new_row;
-  }
+
 
   function init() {
     test();
@@ -75,6 +80,23 @@ import * as RiotAPI from "./services/RiotAPI.js";
     });
   }
 
+  function newStat(num){
+    let new_row = "row" + num;
+    let box = gen("div");
+    box.id = new_row;
+    box.classList.add("box");
+    id("graphs").append(box);
+    return new_row;
+  }
+
+  function break_line(){
+    let row_break = gen("div");
+    row_break.id = "row_break";
+    row_break.classList.add("break");
+    id("graphs").append(row_break);
+    return row_break;
+  }
+
   async function summonerIdSearch() {
 
     // id("404error").style.display="none";
@@ -83,7 +105,7 @@ import * as RiotAPI from "./services/RiotAPI.js";
 
     let region = document.getElementById('selected-item').innerHTML.toLowerCase();
 
-    //clear all graphs
+    // Clear all graphs
     id("graphs").innerHTML = "";
 
     // Loading circle while grabbing data from API
@@ -92,6 +114,8 @@ import * as RiotAPI from "./services/RiotAPI.js";
     let info = await RiotAPI.getUserData(region, searchInput)
 
     id("bars6").parentNode.classList.add("hidden");
+    
+    // Error message
     if (info === "error") {
       // id("404error").style.display="block";
 
@@ -101,8 +125,8 @@ import * as RiotAPI from "./services/RiotAPI.js";
         return;
       }
       
-      id("profileIMG").src = info.profileIconLink;
-      id("profileIMG").style.display="block";
+      // id("profileIMG").src = info.profileIconLink;
+      // id("profileIMG").style.display="block";
 
       // Create the graphs!!!
       labels = [info.summoner.name + " (%)", "teammates (%)"];
@@ -110,18 +134,21 @@ import * as RiotAPI from "./services/RiotAPI.js";
       let box1 = newStat(1);
       createGraph([info.killPercentage, 100 - info.killPercentage], labels, "Average % Kills", box1, colors.slice(0,2));
       createGraph([info.damagePercentage, 100 - info.damagePercentage], labels, "Average % Damage Dealt to Champions", box1, colors.slice(0,2));
+
       const ksScore = getKSScore(info.killPercentage, info.damagePercentage);
       createCard(ksScore, "Kill Security", getKSComment(ksScore), box1);
 
       let box2 = newStat(2);
       createGraph([info.killParticipationPercentage, 100 - info.killParticipationPercentage], labels, "Average % Kill Participation", box2, colors.slice(2,4));
       createGraph([info.minionsKilledPercentage, 100 - info.minionsKilledPercentage], labels, "Average % Minions Killed", box2, colors.slice(2,4));
+
       const farmScore = getAFKFarmingScore(info.killParticipationPercentage, info.minionsKilledPercentage);
       createCard(farmScore, "AFK Farming", getFarmComment(farmScore), box2);
 
       let box3 = newStat(3);
       createGraph([info.deathPercentage, 100 - info.deathPercentage], labels, "Average % Deaths", box3, colors.slice(4,6));
       createGraph([info.timeSpentDeadPercentage, 100 - info.timeSpentDeadPercentage], ["Dead (%)", "Alive (%)"], "Average % Time Spent Dead", box3, colors.slice(4,6));
+
       const grayScore = getGrayScreenScore(info.deathPercentage, info.timeSpentDeadPercentage);
       createCard(grayScore, "Gray Screen Gaming", getGrayComment(grayScore, Math.round(info.timeSpentDeadPercentage)), box3);
 
