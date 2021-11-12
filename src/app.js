@@ -9,7 +9,9 @@ import * as RiotAPI from "./services/RiotAPI.js";
   window.addEventListener("load", init);
   let searchInput = "";
   let labels = [];
-  var colors = ['rgb(255, 214, 132, 1)', 'rgb(94, 72, 200,1)', 'rgb(255, 214, 132, 1)',  'rgba(74, 99, 231,1)', 'rgb(255, 214, 132, 1)', 'rgba(117, 50, 133,1)', 'rgb(255, 214, 132, 1)', 'rgba(17, 157, 164, 1)']
+  var colors = ['rgb(255, 214, 132, 1)', 'rgb(94, 72, 200,1)', 'rgb(255, 214, 132, 1)',
+                'rgba(74, 99, 231,1)', 'rgb(255, 214, 132, 1)', 'rgba(117, 50, 133,1)',
+                'rgb(255, 214, 132, 1)', 'rgba(17, 157, 164, 1)']
 
   function test() {
     // API test
@@ -57,11 +59,13 @@ import * as RiotAPI from "./services/RiotAPI.js";
 
 
   function init() {
-    test();
+    // uncomment for tests
+    // test();
 
     let search_text = id("fname");
 
-    search_text.addEventListener('keypress', function ( event ){
+    // allows the use of the enter key
+    search_text.addEventListener('keypress', function(event) {
       if (event.key === "Enter"){
         event.preventDefault();
         summonerIdSearch();
@@ -69,9 +73,10 @@ import * as RiotAPI from "./services/RiotAPI.js";
     })
 
     let items = document.getElementsByName('item');
-    let selectedItem = document.getElementById('selected-item');
-    let dropdown = document.getElementById('dropdown');
+    let selectedItem = id('selected-item');
+    let dropdown = id('dropdown');
 
+    // adds the drop-down option for the different regions. Ex: NA1, BR1.
     items.forEach(item => {
       item.addEventListener('change', () => {
         if (item.checked) {
@@ -82,8 +87,11 @@ import * as RiotAPI from "./services/RiotAPI.js";
     });
   }
 
-  // Creating HTML items
-
+  /**
+   * create an item that is contained in the specified row.
+   * @param {int} num representing row number
+   * @returns a container that fits in the specified row
+   */
   function newStat(num){
     let new_row = "row" + num;
     let box = gen("div");
@@ -93,6 +101,10 @@ import * as RiotAPI from "./services/RiotAPI.js";
     return new_row;
   }
 
+  /**
+   * adds a line break in text.
+   * @returns a divider that acts as a line break
+   */
   function break_line(){
     let row_break = gen("div");
     row_break.id = "row_break";
@@ -101,6 +113,13 @@ import * as RiotAPI from "./services/RiotAPI.js";
     return row_break;
   }
 
+  /**
+   * creates the card for the specified section relating to the graphs generated.
+   * @param {*} score The score, 1-10, of the player's performance in the specified section.
+   * @param {*} name The name of the specified section, ex: Kill Security, AFK Farming, etc.
+   * @param {*} comment provides a little snarky comment after the score
+   * @param {*} container Provide information of how the specified statistic/score is calculated.
+   */
   function createCard(score, name, comment, container) {
     let p = gen("text");
     let figure = gen("figure");
@@ -112,12 +131,16 @@ import * as RiotAPI from "./services/RiotAPI.js";
   }
 
   // Look up summoner name in API
-  
+
+  /**
+   * searhes the summoner ID of the player that has been inputted, and provides
+   * graphs and statistics of performance in the last 10 games.
+   */
   async function summonerIdSearch() {
 
     // id("404error").style.display="none";
 
-    searchInput = id("fname").value.replace(/\s/g, '');
+    searchInput = id("fname").value.replace(/\s/g, ''); // get rid of spaces
 
     let region = id('selected-item').innerHTML.toLowerCase();
 
@@ -139,12 +162,11 @@ import * as RiotAPI from "./services/RiotAPI.js";
     // Error message
     if (info === "error") {
       // id("404error").style.display="block";
-      error.innerHTML = "<span style='color: rgb(243, 164, 181);'>"+"Summoner ID not found</span>";
+      error.innerHTML = "<span style='color: rgb(243, 164, 181);'>"+"Summoner ID not found.</span>";
 
     } else {
       if (info.gamesFound === 0) {
         error.innerHTML = "<span style='color: rgb(243, 164, 181);'>"+"No ranked games found.</span>"
-        // alert("No Ranked games found");
       }
 
       // id("profileIMG").src = info.profileIconLink;
@@ -158,41 +180,47 @@ import * as RiotAPI from "./services/RiotAPI.js";
       labels = [" " + info.summoner.name + " (%)", " Teammates (%)"];
 
       let box1 = newStat(1);
-      createGraph([info.killPercentage, 100 - info.killPercentage], labels, "Average % Kills", box1, colors.slice(0,2));
-      createGraph([info.damagePercentage, 100 - info.damagePercentage], labels, "Average % Damage Dealt to Champions", box1, colors.slice(0,2));
+      createGraph(info.killPercentage, labels, "Average % Kills", box1, colors.slice(0,2));
+      createGraph(info.damagePercentage, labels, "Average % Damage Dealt to Champions", box1, colors.slice(0,2));
 
       const ksScore = getKSScore(info.killPercentage, info.damagePercentage);
       createCard(ksScore, "Kill Security", getKSComment(ksScore), box1);
       break_line();
 
       let box2 = newStat(2);
-      createGraph([info.killParticipationPercentage, 100 - info.killParticipationPercentage], labels, "Average % Kill Participation", box2, colors.slice(2,4));
-      createGraph([info.minionsKilledPercentage, 100 - info.minionsKilledPercentage], labels, "Average % Minions Killed", box2, colors.slice(2,4));
+      createGraph(info.killParticipationPercentage, labels, "Average % Kill Participation", box2, colors.slice(2,4));
+      createGraph(info.minionsKilledPercentage, labels, "Average % Minions Killed", box2, colors.slice(2,4));
 
       const farmScore = getAFKFarmingScore(info.killParticipationPercentage, info.minionsKilledPercentage);
       createCard(farmScore, "AFK Farming", getFarmComment(farmScore), box2);
       break_line();
 
       let box3 = newStat(3);
-      createGraph([info.deathPercentage, 100 - info.deathPercentage], labels, "Average % Deaths", box3, colors.slice(4,6));
-      createGraph([info.timeSpentDeadPercentage, 100 - info.timeSpentDeadPercentage], ["Dead (%)", "Alive (%)"], "Average % Time Spent Dead", box3, colors.slice(4,6));
+      createGraph(info.deathPercentage, labels, "Average % Deaths", box3, colors.slice(4,6));
+      createGraph(info.timeSpentDeadPercentage, ["Dead (%)", "Alive (%)"], "Average % Time Spent Dead", box3, colors.slice(4,6));
 
       const grayScore = getGrayScreenScore(info.deathPercentage, info.timeSpentDeadPercentage);
       createCard(grayScore, "Gray Screen Gaming", getGrayComment(grayScore, Math.round(info.timeSpentDeadPercentage)), box3);
       break_line();
 
       let box4 = newStat(4);
-      createGraph([info.visionScorePercentage, 100 - info.visionScorePercentage], labels, "Average % Vision Score", box4, colors.slice(0,2));
-      createGraph([info.visionWardsPlacedPercentage, 100 - info.visionWardsPlacedPercentage], labels, "Average % Vision Wards Placed", box4, colors.slice(0,2));
+      createGraph(info.visionScorePercentage, labels, "Average % Vision Score", box4, colors.slice(0,2));
+      createGraph(info.visionWardsPlacedPercentage, labels, "Average % Vision Wards Placed", box4, colors.slice(0,2));
 
       const visionScore = getVisionaryScore(info.visionScorePercentage, info.visionWardsPlacedPercentage);
       createCard(visionScore, "Visionary", getVisionComment(visionScore), box4);
-
     }
   }
 
+  /**
+   * Provides text of how much KS (kill secured).
+   * @param {float} score The score, 1-10, of the player's KS status (kill secured)
+   * @returns the text related to the KS portion.
+   */
   function getKSComment(score) {
-    let desc = "<br> This score weighs your kills per game and damage contribuation to your team. The less damage you do compared to your kills, the more effective you are at securing kills. <br><br><h6>Data is collected over the last 10 ranked games.</h6>";
+    let desc = "<br> This score weighs your kills per game and damage contribuation to your team." +
+               " The less damage you do compared to your kills, the more effective you are at securing kills." +
+               " <br><br><h6>Data is collected over the last 10 ranked games.</h6>";
     let br_i = "<br><i>\"";
     let i_end = "\"</i><br>";
     if (score < 4) {
@@ -204,8 +232,16 @@ import * as RiotAPI from "./services/RiotAPI.js";
     }
   }
 
+  /**
+   * Provides text of the farm (creep score).
+   * @param {float} score The score, 1-10, of the player's farm
+   * @returns the text related to the farming portion.
+   */
   function getFarmComment(score) {
-    let desc = "<br> Comparing your kill participation and your minion kills, the greater the discrepancy, the more likely it is you would rather farm minions during your games. <br><br><h6>Data is collected over the last 10 ranked games.</h6>";
+    let desc = "<br> Comparing your kill participation and your minion kills," +
+               " the greater the discrepancy, the more likely it is you would" +
+               " rather farm minions during your games. <br><br><h6>Data is collected" +
+               " over the last 10 ranked games.</h6>";
     let br_i = "<br><i>\"";
     let i_end = "\"</i><br>";
 
@@ -218,8 +254,16 @@ import * as RiotAPI from "./services/RiotAPI.js";
     }
   }
 
+  /**
+   * Provides text of the grey screen (how long dead).
+   * @param {float} score the score, 1-10, of the player's death.
+   * @param {float} deathPercent percent of time that the player is dead.
+   * @returns the text for gray screen portion.
+   */
   function getGrayComment(score, deathPercent) {
-    let desc = "<br> As your contribution to your team's total deaths and your average time spent out of action increases, so does your gray screen score. <br><br><h6>Data is collected over the last 10 ranked games.</h6>";
+    let desc = "<br> As your contribution to your team's total deaths and your average time" +
+               " spent out of action increases, so does your gray screen score. <br><br><h6>Data" +
+               " is collected over the last 10 ranked games.</h6>";
     let br_i = "<br><i>\"";
     let i_end = "\"</i><br>";
 
@@ -232,8 +276,15 @@ import * as RiotAPI from "./services/RiotAPI.js";
     }
   }
 
+  /**
+   * Provides text of the vision score information text.
+   * @param {float} score the vision score.
+   * @returns text providing information on the vision score.
+   */
   function getVisionComment(score) {
-    let desc = "<br> Having a high average vision score percentage of your team and a high number of wards placed increases your visionary score. <br><br><br><h6>Data is collected over the last 10 ranked games.</h6>";
+    let desc = "<br> Having a high average vision score percentage of your team and" +
+               " a high number of wards placed increases your visionary score. <br><br><br><h6>" +
+               "Data is collected over the last 10 ranked games.</h6>";
     let br_i = "<br><i>\"";
     let i_end = "\"</i><br>";
 
@@ -247,7 +298,6 @@ import * as RiotAPI from "./services/RiotAPI.js";
   }
 
   // scores are tuned by experimentation, see test()
-
   function getKSScore(k, d) {
     const v = k - d;
     return (boundVal(v * 4 + 40, 0, 100) / 10).toFixed(1);
@@ -281,16 +331,15 @@ import * as RiotAPI from "./services/RiotAPI.js";
     return (((val - oldMin) * (newMax - newMin)) / (oldMax - oldMin)) + newMin
   }
 
-
-
-  function createGraph(data, labels, title, htmlContainer, color) {
-    // Data: array length 2 of two percentages
-    // Labels: corresponding labels of each color on the chart. same order as data
-    // Title: title of the graph
-    // htmlContainer: which container in html the graph should be put into
-    // Color: array of size 2 of the colors used in the chart.
-    // colors = arrayRotate(colors);
-
+  /**
+   * create a graph
+   * @param {float} percentage percentage of one of the properties (ex. % average kills)
+   * @param {list} labels corresponding labels of each color on the chart. same order as data
+   * @param {String} title title of the graph
+   * @param {String} htmlContainer the id of the container the graph should be put into
+   * @param {list} color list of length 2 that corresponds to the color.
+   */
+  function createGraph(percentage, labels, title, htmlContainer, color) {
     let figure = gen("figure");
     let canvas = gen("canvas");
 
@@ -299,14 +348,14 @@ import * as RiotAPI from "./services/RiotAPI.js";
     figure.appendChild(canvas);
     id(htmlContainer).appendChild(figure);
 
-
+    // graph
     const myChart = new Chart(title, {
       type: 'doughnut',
       data: {
         labels: labels,
         datasets: [{
           label: 'Graph',
-          data: data.map(d => d.toFixed(1)),
+          data: [percentage.toFixed(1), (100 - percentage).toFixed(1)],
           backgroundColor:color,
         }]
       },
