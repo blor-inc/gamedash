@@ -172,6 +172,8 @@ import * as RiotAPI from "./services/RiotAPI.js";
     } else {
       if (info.gamesFound === 0) {
         error.innerHTML = "<span style='color: rgb(243, 164, 181);'>"+"No ranked games found.</span>"
+      } else {
+        error.innerHTML = "";
       }
 
       // id("profileIMG").src = info.profileIconLink;
@@ -186,7 +188,7 @@ import * as RiotAPI from "./services/RiotAPI.js";
 
       let box1 = newStat(1);
       createGraph(info.killPercentage, labels, "Average % Kills", box1, colors.slice(0,2));
-      createGraph(info.damagePercentage, labels, "Average % Damage Dealt to Champions", box1, colors.slice(0,2));
+      createGraph(info.damagePercentage, labels, "Average % Damage Dealt", box1, colors.slice(0,2));
 
       const ksScore = getKSScore(info.killPercentage, info.damagePercentage);
       createCard(ksScore, "Kill Security", getKSComment(ksScore), box1);
