@@ -27,7 +27,7 @@ import * as RiotAPI from "./services/RiotAPI.js";
     createGraph([25, 75], ["A", "B"], "Another Test", box11, colors.slice(0,2));
     break_line();
     createCard(score1, "Test Stat", "alskjdflasjflkasjdflajsdlfjalsdfjalsdfjalsdkjf", box11);
-    
+
 
     // score test
     // for (let v = -10; v < 15; v += 0.1) {
@@ -130,7 +130,7 @@ import * as RiotAPI from "./services/RiotAPI.js";
     let info = await RiotAPI.getUserData(region, searchInput)
 
     id("bars6").parentNode.classList.add("hidden");
-    
+
     // Error message
     if (info === "error") {
       // id("404error").style.display="block";
@@ -140,9 +140,13 @@ import * as RiotAPI from "./services/RiotAPI.js";
         alert("No Ranked games found"); // Need better UI to signal this to user.
         return;
       }
-      
-      // id("profileIMG").src = info.profileIconLink;
-      // id("profileIMG").style.display="block";
+
+      id("profileIMG").src = info.profileIconLink;
+      id("profileIMG").style.display = "block";
+      id("summonerName").innerHTML = info.summoner.name;
+      id("summonerName").style.display = "block";
+      id("summonerLVL").innerHTML = info.summoner.summonerLevel;
+      id("summonerLVL").style.display = "block";
 
       // Create the graphs!!!
       labels = [info.summoner.name + " (%)", "teammates (%)"];
@@ -174,7 +178,7 @@ import * as RiotAPI from "./services/RiotAPI.js";
       let box4 = newStat(4);
       createGraph([info.visionScorePercentage, 100 - info.visionScorePercentage], labels, "Average % Vision Score", box4, colors.slice(0,2));
       createGraph([info.visionWardsPlacedPercentage, 100 - info.visionWardsPlacedPercentage], labels, "Average % Vision Wards Placed", box4, colors.slice(0,2));
-      
+
       const visionScore = getVisionaryScore(info.visionScorePercentage, info.visionWardsPlacedPercentage);
       createCard(visionScore, "Visionary", getVisionComment(visionScore), box4);
     }
@@ -225,7 +229,7 @@ import * as RiotAPI from "./services/RiotAPI.js";
 
   function getKSScore(k, d) {
     const v = k - d;
-    return (boundVal(v * 4 + 40, 0, 100) / 10).toFixed(1); 
+    return (boundVal(v * 4 + 40, 0, 100) / 10).toFixed(1);
   }
 
   function getAFKFarmingScore(kp, m) {
@@ -256,7 +260,7 @@ import * as RiotAPI from "./services/RiotAPI.js";
     return (((val - oldMin) * (newMax - newMin)) / (oldMax - oldMin)) + newMin
   }
 
-  
+
 
   function createGraph(data, labels, title, htmlContainer, color) {
     // Data: array length 2 of two percentages
@@ -289,7 +293,7 @@ import * as RiotAPI from "./services/RiotAPI.js";
         hoverOffset: 6,
         responsive: true,
         plugins:{
-          tooltip: { 
+          tooltip: {
             bodyFont: {
               size: 20
             }
