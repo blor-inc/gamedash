@@ -2,8 +2,7 @@
 
 const LATEST_DATA_DRAGON_VERSION = "11.22.1";
 
-const KEY = "RGAPI-82d1cf9e-6a10-45e7-b85d-2ee5514d3091";
-
+const KEY = "RGAPI-2e3a145a-d0c3-4cf6-9b65-061be06ba020";
 const KEY_QUERY = "?api_key=" + KEY;
 
 const MAPPED_REGIONS = {"americas": ["na1", "br1", "la1", "la2", "oc1"],
@@ -46,24 +45,31 @@ export async function getUserData(region, summonerName) {
         const gameStats = await getGameStats(summoner.puuid, matchInfos);
         resultObj["gameStats"] = gameStats;
     
-        resultObj["killPercentage"] = getKillPercentage(gameStats.playerStats, gameStats.teamStats);
+        resultObj["killPercentage"] = getPlayerTraitsPercentage(gameStats, ["kills"]);
     
-        resultObj["deathPercentage"] = getDeathPercentage(gameStats.playerStats, gameStats.teamPlayerStats, gameStats.teamStats);
+        resultObj["deathPercentage"] = getPlayerTraitsPercentage(gameStats, ["deaths"]);
     
-        resultObj["damagePercentage"] = getDamagePercentage(gameStats.playerStats, gameStats.teamPlayerStats);
+        resultObj["damagePercentage"] = getPlayerTraitsPercentage(gameStats, ["totalDamageDealtToChampions"]);
     
         resultObj["killParticipationPercentage"] = getKillParticipationPercentage(gameStats.playerStats, gameStats.teamStats);
     
-        resultObj["minionsKilledPercentage"] = getMinionsKilledPercentage(gameStats.playerStats, gameStats.teamPlayerStats, gameStats.teamStats);
+        resultObj["minionsKilledPercentage"] = getPlayerTraitsPercentage(gameStats, ["neutralMinionsKilled", "totalMinionsKilled"]);
     
-        resultObj["goldEarnedPercentage"] = getGoldEarnedPercentage(gameStats.playerStats, gameStats.teamPlayerStats, gameStats.teamStats);
+        resultObj["goldEarnedPercentage"] = getPlayerTraitsPercentage(gameStats, ["goldEarned"]);
     
         resultObj["visionScorePerMinute"] = getVisionScorePerMinute(gameStats.playerStats, gameStats.gameTimes);
     
-        resultObj["visionScorePercentage"] = getVisionScorePercentage(gameStats.playerStats, gameStats.teamPlayerStats, gameStats.teamStats);
+        resultObj["visionScorePercentage"] = getPlayerTraitsPercentage(gameStats, ["visionScore"]);
+
+        resultObj["visionWardsPlacedPercentage"] = getPlayerTraitsPercentage(gameStats, ["wardsPlaced"])
+
+        let timeSpentDead = average(getPlayerTraitsTotal(gameStats, ["totalTimeSpentDead"]));
+        let totalGameTime = average(gameStats.gameTimes);
+
+        resultObj["timeSpentDeadPercentage"] = 100 * timeSpentDead / totalGameTime;
     
         resultObj["profileIconLink"] = getProfileIconLink(summoner.profileIcondId);
-        console.log(gameStats.gameTimes);
+
         return resultObj;
     } catch (e) {
         console.warn(e);
@@ -200,50 +206,19 @@ async function getMatchInfos(region, matches) {
     }
 }
 
-function getKillPercentage(playerStats, teamStats) {
-    let killPercentages = [];
-    for (let i = 0; i < 10; i++) {
-      killPercentages.push((playerStats[i].kills / teamStats[i].objectives.champion.kills)* 100);
-    }
-
-    return median(killPercentages);
-}
-
 function median(arr) {
     const mid = Math.floor(arr.length / 2);
     const nums = [...arr].sort((a, b) => a - b);
     return arr.length % 2 !== 0 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2
 }
 
-/**
- *
- * @param {string} region
- * @param {string} matchInfos
- * @returns an array of ally team's total damage dealt to champions ({10} games).
- * Each index represents one game. (From most recent ranked games)
- */
-function getDamagePercentage(playerStats, teamPlayerStats) {
-    let gameDamages = [];
-    let index = 0;
-    let playerTeamIds = [];
-    let playerDmgDealt = [];
-    for (const playerMatch of playerStats) {
-        playerTeamIds.push(playerMatch.teamId);
-        playerDmgDealt.push(playerMatch.totalDamageDealtToChampions);
+function average(arr) {
+    let total = 0;
+    for (let i = 0; i < arr.length; i++) {
+        total += arr[i];
     }
 
-    for (const match of teamPlayerStats) {
-        let summonerTeam = playerTeamIds[index];
-        let tally = 0;
-        for (const players of match) {
-            if (players.teamId === summonerTeam) {
-                tally += players.totalDamageDealtToChampions;
-            }
-        }
-        gameDamages.push(playerDmgDealt[index] / tally * 100);
-        index++;
-    }
-    return median(gameDamages);
+    return total / arr.length;
 }
 
 /**
@@ -267,35 +242,7 @@ function getVisionScorePerMinute(playerStats, gameTimes) {
         index += 1;
     }
 
-    return median(visionScorePerMinute);
-}
-
-function getVisionScorePercentage(playerStats, teamPlayerStats, teamStats) {
-    let playerVisionScores = [];
-    for (const playerStat of playerStats) {
-        playerVisionScores.push(playerStat.visionScore);
-    }
-
-    let teamVisionScores = [];
-    for (let i = 0; i < teamPlayerStats.length; i++) {
-        let teamVisionScore = 0;
-        for (const singlePlayerStat of teamPlayerStats[i]) {
-            if (singlePlayerStat.teamId === teamStats[i].teamId) {
-                teamVisionScore += singlePlayerStat.visionScore;
-            }
-        }
-
-        teamVisionScores.push(teamVisionScore);
-    }
-
-    let percentages = [];
-    for (let i = 0; i < playerVisionScores.length; i++) {
-        if (teamVisionScores[i] !== 0) {
-            percentages.push(playerVisionScores[i] / teamVisionScores[i] * 100);
-        }
-    }
-
-    return median(percentages);
+    return average(visionScorePerMinute);
 }
 
 function getKillParticipationPercentage(playerStats, teamStats) {
@@ -316,93 +263,74 @@ function getKillParticipationPercentage(playerStats, teamStats) {
         }
     }
 
-    return median(percentages)
+    return average(percentages)
 }
 
-
-function getMinionsKilledPercentage(playerStats, teamPlayerStats, teamStats) {
-    let playerCSs = [];
-    for (const playerStat of playerStats) {
-        playerCSs.push(playerStat.neutralMinionsKilled + playerStat.totalMinionsKilled);
-    }
-
-    let teamCSs = [];
-    for (let i = 0; i < teamPlayerStats.length; i++) {
-        let teamCS = 0;
-        for (const singlePlayerStat of teamPlayerStats[i]) {
-            if (singlePlayerStat.teamId === teamStats[i].teamId) {
-                teamCS += singlePlayerStat.neutralMinionsKilled + singlePlayerStat.totalMinionsKilled;
-            }
-        }
-
-        teamCSs.push(teamCS);
+function getTimeSpentDeadPercentageOfGame(gameStats) {
+    let playerDeathTimes = [];
+    for (const playerStat of gameStats.playerStats) {
+        playerDeathTimes.push(playerStat.totalTimeSpentDead);
     }
 
     let percentages = [];
-    for (let i = 0; i < playerCSs.length; i++) {
-        if (teamCSs[i] !== 0) {
-            percentages.push(playerCSs[i] / teamCSs[i] * 100);
+    for (let i = 0; i < playerDeathTimes.length; i++) {
+        if (gameStats.gameTimes[i] !== 0) {
+            percentages.push(playerDeathTimes[i]);
         }
     }
 
-    return median(percentages);
+    return average(percentages)
 }
 
-
-function getGoldEarnedPercentage(playerStats, teamPlayerStats, teamStats) {
-    let playerGolds = [];
-    for (const playerStat of playerStats) {
-        playerGolds.push(playerStat.goldEarned);
+function getPlayerTraitsTotal(gameStats, traits) {
+    let playerXs = [];
+    for (const playerStat of gameStats.playerStats) {
+        let playerX = 0;
+        for (const trait of traits) {
+            playerX += playerStat[trait];
+        }
+        playerXs.push(playerX);
     }
 
-    let teamGolds = [];
-    for (let i = 0; i < teamPlayerStats.length; i++) {
-        let teamGold = 0;
-        for (const singlePlayerStat of teamPlayerStats[i]) {
-            if (singlePlayerStat.teamId === teamStats[i].teamId) {
-                teamGold += singlePlayerStat.goldEarned;
+    return playerXs;
+}
+
+function getTeamTraitsTotal(gameStats, traits) {
+    let teamXs = [];
+    for (let i = 0; i < gameStats.teamPlayerStats.length; i++) {
+        let teamX = 0;
+        for (const singlePlayerStat of gameStats.teamPlayerStats[i]) {
+            if (singlePlayerStat.teamId === gameStats.teamStats[i].teamId) {
+                for (const trait of traits) {
+                    teamX += singlePlayerStat[trait];
+                }
             }
         }
 
-        teamGolds.push(teamGold);
+        teamXs.push(teamX);
     }
 
-    let percentages = [];
-    for (let i = 0; i < playerGolds.length; i++) {
-        if (teamGolds[i] !== 0) {
-            percentages.push(playerGolds[i] / teamGolds[i] * 100);
-        }
-    }
-
-    return median(percentages);
+    return teamXs;
 }
 
-function getDeathPercentage(playerStats, teamPlayerStats, teamStats) {
-    let playerDeaths = [];
-    for (const playerStat of playerStats) {
-        playerDeaths.push(playerStat.deaths);
-    }
-
-    let teamDeaths = [];
-    for (let i = 0; i < teamPlayerStats.length; i++) {
-        let teamDeath = 0;
-        for (const singlePlayerStat of teamPlayerStats[i]) {
-            if (singlePlayerStat.teamId === teamStats[i].teamId) {
-                teamDeath += singlePlayerStat.deaths;
-            }
-        }
-
-        teamDeaths.push(teamDeath);
-    }
-
+function getPlayerPercentageOfTeam(playerValues, teamValues) {
     let percentages = [];
-    for (let i = 0; i < playerDeaths.length; i++) {
-        if (teamDeaths[i] !== 0) {
-            percentages.push(playerDeaths[i] / teamDeaths[i] * 100);
+    for (let i = 0; i < playerValues.length; i++) {
+        if (teamValues[i] !== 0) {
+            percentages.push(playerValues[i] / teamValues[i] * 100);
         }
     }
 
-    return median(percentages);
+    return average(percentages);
+}
+
+// generalized function for calculating percentage of team across specific "playerTraits"
+function getPlayerTraitsPercentage(gameStats, traits) {
+    const playerValues = getPlayerTraitsTotal(gameStats, traits);
+
+    const teamValues = getTeamTraitsTotal(gameStats, traits);
+
+    return getPlayerPercentageOfTeam(playerValues, teamValues);
 }
 
 /**
