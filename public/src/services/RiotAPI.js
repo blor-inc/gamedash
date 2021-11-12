@@ -2,6 +2,7 @@
 
 const LATEST_DATA_DRAGON_VERSION = "11.22.1";
 
+// const KEY = process.env.RIOT_API_KEY;
 const KEY = "RGAPI-2e3a145a-d0c3-4cf6-9b65-061be06ba020";
 const KEY_QUERY = "?api_key=" + KEY;
 
