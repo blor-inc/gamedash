@@ -108,6 +108,7 @@ import * as RiotAPI from "./services/RiotAPI.js";
 
     p.textContent = name + " Score: " + score + "/10\n\n" + comment;
     id(container).appendChild(figure);
+
   }
 
 
