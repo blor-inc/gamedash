@@ -79,14 +79,9 @@ import * as RiotAPI from "./services/RiotAPI.js";
 
     // id("404error").style.display="none";
 
-    console.log("summonerIdSearch")
-
     searchInput = id("fname").value.replace(/\s/g, '');
 
     let region = document.getElementById('selected-item').innerHTML.toLowerCase();
-    console.log(region);
-    
-
 
     //clear all graphs
     id("graphs").innerHTML = "";
@@ -95,7 +90,6 @@ import * as RiotAPI from "./services/RiotAPI.js";
     id("bars6").parentNode.classList.remove("hidden");
 
     let info = await RiotAPI.getUserData(region, searchInput)
-    console.log(info);
 
     id("bars6").parentNode.classList.add("hidden");
     if (info === "error") {
@@ -111,31 +105,31 @@ import * as RiotAPI from "./services/RiotAPI.js";
       id("profileIMG").style.display="block";
 
       // Create the graphs!!!
-      labels = [info.summoner.name + " (%)", "Team (%)"];
+      labels = [info.summoner.name + " (%)", "teammates (%)"];
 
       let box1 = newStat(1);
-      createGraph([info.killPercentage, 100 - info.killPercentage], labels, "Kills", box1, colors.slice(0,2));
-      createGraph([info.damagePercentage, 100 - info.damagePercentage], labels, "Damage", box1, colors.slice(0,2));
+      createGraph([info.killPercentage, 100 - info.killPercentage], labels, "Average % Kills", box1, colors.slice(0,2));
+      createGraph([info.damagePercentage, 100 - info.damagePercentage], labels, "Average % Damage Dealt to Champions", box1, colors.slice(0,2));
       const score1 = getKSScore(info.killPercentage, info.damagePercentage);
-      createCard(score1, "Kill Security", box1);
+      createCard(score1, "Kill Security", "", box1);
 
       let box2 = newStat(2);
-      createGraph([info.killParticipationPercentage, 100 - info.killParticipationPercentage], labels, "Kill Participation", box2, colors.slice(2,4));
-      createGraph([info.minionsKilledPercentage, 100 - info.minionsKilledPercentage], labels, "Minions Killed", box2, colors.slice(2,4));
+      createGraph([info.killParticipationPercentage, 100 - info.killParticipationPercentage], labels, "Average % Kill Participation", box2, colors.slice(2,4));
+      createGraph([info.minionsKilledPercentage, 100 - info.minionsKilledPercentage], labels, "Average % Minions Killed", box2, colors.slice(2,4));
       const score2 = getAFKFarmingScore(info.killParticipationPercentage, info.minionsKilledPercentage);
-      createCard(score2, "AFK Farming", box2);
+      createCard(score2, "AFK Farming", "", box2);
 
       let box3 = newStat(3);
-      createGraph([info.deathPercentage, 100 - info.deathPercentage], labels, "Deaths", box3, colors.slice(4,6));
-      createGraph([info.timeSpentDeadPercentage, 100 - info.timeSpentDeadPercentage], ["Dead (%)", "Alive (%)"], "Time Spent Dead", box3, colors.slice(4,6));
+      createGraph([info.deathPercentage, 100 - info.deathPercentage], labels, "Average % Deaths", box3, colors.slice(4,6));
+      createGraph([info.timeSpentDeadPercentage, 100 - info.timeSpentDeadPercentage], ["Dead (%)", "Alive (%)"], "Average % Time Spent Dead", box3, colors.slice(4,6));
       const score3 = getGrayScreenScore(info.deathPercentage, info.timeSpentDeadPercentage);
-      createCard(score3, "Gray Screen Gaming", box3);
+      createCard(score3, "Gray Screen Gaming", "", box3);
 
       let box4 = newStat(4);
-      createGraph([info.visionScorePercentage, 100 - info.visionScorePercentage], labels, "Vision Score", box4, colors.slice(0,2));
-      createGraph([info.visionWardsPlacedPercentage, 100 - info.visionWardsPlacedPercentage], labels, "Vision Wards Placed", box4, colors.slice(0,2));
+      createGraph([info.visionScorePercentage, 100 - info.visionScorePercentage], labels, "Average % Vision Score", box4, colors.slice(0,2));
+      createGraph([info.visionWardsPlacedPercentage, 100 - info.visionWardsPlacedPercentage], labels, "Average % Vision Wards Placed", box4, colors.slice(0,2));
       const score4 = getVisionaryScore(info.visionScorePercentage, info.visionWardsPlacedPercentage);
-      createCard(score4, "Visionary", box4);
+      createCard(score4, "Visionary", "", box4);
     }
 
   }
@@ -175,9 +169,11 @@ import * as RiotAPI from "./services/RiotAPI.js";
     return (((val - oldMin) * (newMax - newMin)) / (oldMax - oldMin)) + newMin
   }
 
-  function createCard(score, name, container) {
+  function createCard(score, name, comment, container) {
     let p = gen("p");
     p.textContent = name + " Score: " + score + "/10";
+    p.textContext += '\n';
+    p.textContext += comment;
     id(container).appendChild(p);
   }
 
@@ -204,7 +200,7 @@ import * as RiotAPI from "./services/RiotAPI.js";
         labels: labels,
         datasets: [{
           label: 'Graph',
-          data: data,
+          data: data.map(d => d.toFixed(1)),
           backgroundColor:color,
         }]
       },
@@ -234,6 +230,7 @@ import * as RiotAPI from "./services/RiotAPI.js";
           },
 
           legend:{
+            display: false,
             position: 'bottom',
             labels:{
               padding: 50,
