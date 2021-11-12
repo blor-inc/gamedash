@@ -31,7 +31,9 @@
   .box {
     display:flex;
     flex-direction:row;
-    flex-wrap:wrap;
+    /* flex-wrap:wrap; */
+    flex:1 1 0px;
+
   }
 
   .break {
@@ -49,6 +51,9 @@
     font-family: "Spartan", sans-serif;
     box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
     border-radius: 20px;
+    margin-left: 50px;
+
+    
   }
 
   figure {

@@ -80,6 +80,8 @@ import * as RiotAPI from "./services/RiotAPI.js";
     });
   }
 
+  // Creating HTML items
+  
   function newStat(num){
     let new_row = "row" + num;
     let box = gen("div");
@@ -96,6 +98,14 @@ import * as RiotAPI from "./services/RiotAPI.js";
     id("graphs").append(row_break);
     return row_break;
   }
+
+  function createCard(score, name, comment, container) {
+    let p = gen("p");
+    p.textContent = name + " Score: " + score + "/10\n\n" + comment;
+    id(container).appendChild(p);
+  }
+
+
 
   async function summonerIdSearch() {
 
@@ -137,6 +147,7 @@ import * as RiotAPI from "./services/RiotAPI.js";
 
       const ksScore = getKSScore(info.killPercentage, info.damagePercentage);
       createCard(ksScore, "Kill Security", getKSComment(ksScore), box1);
+      break_line();
 
       let box2 = newStat(2);
       createGraph([info.killParticipationPercentage, 100 - info.killParticipationPercentage], labels, "Average % Kill Participation", box2, colors.slice(2,4));
@@ -144,6 +155,7 @@ import * as RiotAPI from "./services/RiotAPI.js";
 
       const farmScore = getAFKFarmingScore(info.killParticipationPercentage, info.minionsKilledPercentage);
       createCard(farmScore, "AFK Farming", getFarmComment(farmScore), box2);
+      break_line();
 
       let box3 = newStat(3);
       createGraph([info.deathPercentage, 100 - info.deathPercentage], labels, "Average % Deaths", box3, colors.slice(4,6));
@@ -151,10 +163,12 @@ import * as RiotAPI from "./services/RiotAPI.js";
 
       const grayScore = getGrayScreenScore(info.deathPercentage, info.timeSpentDeadPercentage);
       createCard(grayScore, "Gray Screen Gaming", getGrayComment(grayScore, Math.round(info.timeSpentDeadPercentage)), box3);
+      break_line();
 
       let box4 = newStat(4);
       createGraph([info.visionScorePercentage, 100 - info.visionScorePercentage], labels, "Average % Vision Score", box4, colors.slice(0,2));
       createGraph([info.visionWardsPlacedPercentage, 100 - info.visionWardsPlacedPercentage], labels, "Average % Vision Wards Placed", box4, colors.slice(0,2));
+      
       const visionScore = getVisionaryScore(info.visionScorePercentage, info.visionWardsPlacedPercentage);
       createCard(visionScore, "Visionary", getVisionComment(visionScore), box4);
     }
@@ -236,11 +250,7 @@ import * as RiotAPI from "./services/RiotAPI.js";
     return (((val - oldMin) * (newMax - newMin)) / (oldMax - oldMin)) + newMin
   }
 
-  function createCard(score, name, comment, container) {
-    let p = gen("p");
-    p.textContent = name + " Score: " + score + "/10\n\n" + comment;
-    id(container).appendChild(p);
-  }
+  
 
   function createGraph(data, labels, title, htmlContainer, color) {
     // Data: array length 2 of two percentages
