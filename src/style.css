@@ -38,12 +38,14 @@
     background-color: rgba(94, 114, 228, 0.1);
     box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
     border-radius: 20px;
+    line-height: 2;
 
     padding: 25px;
     margin-right: 20px;
     margin-bottom: 20px;
 
     text-align: center;
+    width: 100%;
   }
 
 
