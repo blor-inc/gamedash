@@ -125,6 +125,11 @@ import * as RiotAPI from "./services/RiotAPI.js";
     let figure = gen("figure");
     figure.appendChild(p);
 
+    // adjusts perfect integers to integers. Ex: 10.0 -> 10
+    if (score % 1 == 0) {
+      score = parseInt(score);
+    }
+
     p.innerHTML = "<h3>" + name + " Score: " + score + "/10\n\n"  + "</h3> " + comment ;
 
     id(container).appendChild(figure);
@@ -200,7 +205,7 @@ import * as RiotAPI from "./services/RiotAPI.js";
       createGraph(info.timeSpentDeadPercentage, ["Dead (%)", "Alive (%)"], "Average % Time Spent Dead", box3, colors.slice(4,6));
 
       const grayScore = getGrayScreenScore(info.deathPercentage, info.timeSpentDeadPercentage);
-      createCard(grayScore, "Gray Screen Gaming", getGrayComment(grayScore, Math.round(info.timeSpentDeadPercentage)), box3);
+      createCard(grayScore, "Gray Screener", getGrayComment(grayScore, Math.round(info.timeSpentDeadPercentage)), box3);
       break_line();
 
       let box4 = newStat(4);
