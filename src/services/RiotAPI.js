@@ -9,56 +9,56 @@ const MAPPED_REGIONS = {"americas": ["na1", "br1", "la1", "la2", "oc1"],
                         "asia": ["kr", "jp1"],
                         "europe": ["eun1", "euw1", "tr1", "ru"]};
 
-// This prevents something called preflight requests which can cause CORS errors. 
+// This prevents something called preflight requests which can cause CORS errors.
 // GET requests encourages simple requests and tries to avoid CORS policy blocked errors.
 const REQUEST_OPTIONS = {
-    method: 'GET', 
+    method: 'GET',
 }
 
 /**
- * One function to rule them all. 
- * 
- * A single function that calls all necessary helpers to aggregate and return 
+ * One function to rule them all.
+ *
+ * A single function that calls all necessary helpers to aggregate and return
  * a single object with everything needed by the app.
- * 
+ *
  * This also prevents multiple helpers from each calling the same API multiple times.
- * @param {String} region 
- * @param {String} summonerName 
+ * @param {String} region
+ * @param {String} summonerName
  */
 export async function getUserData(region, summonerName) {
     try {
         let resultObj = [];
 
         let summoner = await getSummonerByName(region, summonerName);
-    
+
         let matches = await getMatches(region, summoner.puuid, "ranked", 10);
-    
+
         resultObj["gamesFound"] = matches.length;
         if (resultObj["gamesFound"] < 1) {
             return resultObj;
         }
-    
+
         let matchInfos = await getMatchInfos(region, matches);
-    
+
         resultObj["summoner"] = summoner;
-    
+
         const gameStats = await getGameStats(summoner.puuid, matchInfos);
         resultObj["gameStats"] = gameStats;
-    
+
         resultObj["killPercentage"] = getPlayerTraitsPercentage(gameStats, ["kills"]);
-    
+
         resultObj["deathPercentage"] = getPlayerTraitsPercentage(gameStats, ["deaths"]);
-    
+
         resultObj["damagePercentage"] = getPlayerTraitsPercentage(gameStats, ["totalDamageDealtToChampions"]);
-    
+
         resultObj["killParticipationPercentage"] = getKillParticipationPercentage(gameStats.playerStats, gameStats.teamStats);
-    
+
         resultObj["minionsKilledPercentage"] = getPlayerTraitsPercentage(gameStats, ["neutralMinionsKilled", "totalMinionsKilled"]);
-    
+
         resultObj["goldEarnedPercentage"] = getPlayerTraitsPercentage(gameStats, ["goldEarned"]);
-    
+
         resultObj["visionScorePerMinute"] = getVisionScorePerMinute(gameStats.playerStats, gameStats.gameTimes);
-    
+
         resultObj["visionScorePercentage"] = getPlayerTraitsPercentage(gameStats, ["visionScore"]);
 
         resultObj["visionWardsPlacedPercentage"] = getPlayerTraitsPercentage(gameStats, ["wardsPlaced"])
@@ -67,7 +67,7 @@ export async function getUserData(region, summonerName) {
         let totalGameTime = average(gameStats.gameTimes);
 
         resultObj["timeSpentDeadPercentage"] = 100 * timeSpentDead / totalGameTime;
-    
+
         resultObj["profileIconLink"] = getProfileIconLink(summoner.profileIcondId);
 
         return resultObj;
@@ -135,7 +135,8 @@ async function getSummonerByName(region, name) {
         let response = await fetch('https://' + region + '.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + name + KEY_QUERY, REQUEST_OPTIONS);
         await statusCheck(response);
         let data = await response.json();
-        return {"name": name, "puuid": data.puuid, 
+        // Some doggy put {"name": name}
+        return {"name": data.name, "puuid": data.puuid,
             "profileIcondId": data.profileIconId, "summonerLevel": data.summonerLevel};
     } catch(e) {
         console.warn(e);
@@ -222,9 +223,9 @@ function average(arr) {
 }
 
 /**
- * 
- * @param {string} region 
- * @param {string} name 
+ *
+ * @param {string} region
+ * @param {string} name
  * @returns array of vision score per minute 0 index is the most recent ranked game
  */
 function getVisionScorePerMinute(playerStats, gameTimes) {
@@ -334,9 +335,9 @@ function getPlayerTraitsPercentage(gameStats, traits) {
 }
 
 /**
- * 
- * @param {string} region 
- * @param {string} name 
+ *
+ * @param {string} region
+ * @param {string} name
  * @returns object with profileIconLink and summonerLevel
  */
 function getProfileIconLink(profileIcondId) {
