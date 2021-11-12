@@ -110,28 +110,68 @@ import * as RiotAPI from "./services/RiotAPI.js";
       let box1 = newStat(1);
       createGraph([info.killPercentage, 100 - info.killPercentage], labels, "Average % Kills", box1, colors.slice(0,2));
       createGraph([info.damagePercentage, 100 - info.damagePercentage], labels, "Average % Damage Dealt to Champions", box1, colors.slice(0,2));
-      const score1 = getKSScore(info.killPercentage, info.damagePercentage);
-      createCard(score1, "Kill Security", "", box1);
+      const ksScore = getKSScore(info.killPercentage, info.damagePercentage);
+      createCard(ksScore, "Kill Security", getKSComment(ksScore), box1);
 
       let box2 = newStat(2);
       createGraph([info.killParticipationPercentage, 100 - info.killParticipationPercentage], labels, "Average % Kill Participation", box2, colors.slice(2,4));
       createGraph([info.minionsKilledPercentage, 100 - info.minionsKilledPercentage], labels, "Average % Minions Killed", box2, colors.slice(2,4));
-      const score2 = getAFKFarmingScore(info.killParticipationPercentage, info.minionsKilledPercentage);
-      createCard(score2, "AFK Farming", "", box2);
+      const farmScore = getAFKFarmingScore(info.killParticipationPercentage, info.minionsKilledPercentage);
+      createCard(farmScore, "AFK Farming", getFarmComment(farmScore), box2);
 
       let box3 = newStat(3);
       createGraph([info.deathPercentage, 100 - info.deathPercentage], labels, "Average % Deaths", box3, colors.slice(4,6));
       createGraph([info.timeSpentDeadPercentage, 100 - info.timeSpentDeadPercentage], ["Dead (%)", "Alive (%)"], "Average % Time Spent Dead", box3, colors.slice(4,6));
-      const score3 = getGrayScreenScore(info.deathPercentage, info.timeSpentDeadPercentage);
-      createCard(score3, "Gray Screen Gaming", "", box3);
+      const grayScore = getGrayScreenScore(info.deathPercentage, info.timeSpentDeadPercentage);
+      createCard(grayScore, "Gray Screen Gaming", getGrayComment(grayScore, Math.round(info.timeSpentDeadPercentage)), box3);
 
       let box4 = newStat(4);
       createGraph([info.visionScorePercentage, 100 - info.visionScorePercentage], labels, "Average % Vision Score", box4, colors.slice(0,2));
       createGraph([info.visionWardsPlacedPercentage, 100 - info.visionWardsPlacedPercentage], labels, "Average % Vision Wards Placed", box4, colors.slice(0,2));
-      const score4 = getVisionaryScore(info.visionScorePercentage, info.visionWardsPlacedPercentage);
-      createCard(score4, "Visionary", "", box4);
+      const visionScore = getVisionaryScore(info.visionScorePercentage, info.visionWardsPlacedPercentage);
+      createCard(visionScore, "Visionary", getVisionComment(visionScore), box4);
     }
 
+  }
+
+  function getKSComment(score) {
+    if (score < 4) {
+      return "What a generous soul...";
+    } else if (score < 7) {
+      return "Just takes what they deserve, more or less.";
+    } else {
+      return "Thief, burglar, dare I say degenerate.";
+    }
+  }
+
+  function getFarmComment(score) {
+    if (score < 4) {
+      return "Minions are friends, not food.";
+    } else if (score < 7) {
+      return "Financially and fiscally responsible."
+    } else {
+      return "Can't tell minions and champions apart.";
+    }
+  }
+
+  function getGrayComment(score, deathPercent) {
+    if (score < 4) {
+      return "Enjoys being alive.";
+    } else if (score < 7) {
+      return "Sometimes the screen goes dark. Not sure why."
+    } else {
+      return "Imagine being dead " + deathPercent + "% of the game.";
+    }
+  }
+
+  function getVisionComment(score) {
+    if (score < 4) {
+      return "Plays with their eyes closed.";
+    } else if (score < 7) {
+      return "Brings a flashlight when camping. Appropriate."
+    } else {
+      return "Certified ten thousand lumens.";
+    }
   }
 
   // scores are tuned by experimentation, see test()
@@ -142,8 +182,8 @@ import * as RiotAPI from "./services/RiotAPI.js";
   }
 
   function getAFKFarmingScore(kp, m) {
-    const v = m - kp / 2;
-    return boundVal(v / 3 + 3, 0, 10).toFixed(1);
+    const v = m * 4 - kp / 2;
+    return boundVal(v / 8, 0, 10).toFixed(1);
   }
 
   function getGrayScreenScore(d, t) {
@@ -171,9 +211,7 @@ import * as RiotAPI from "./services/RiotAPI.js";
 
   function createCard(score, name, comment, container) {
     let p = gen("p");
-    p.textContent = name + " Score: " + score + "/10";
-    p.textContext += '\n';
-    p.textContext += comment;
+    p.textContent = name + " Score: " + score + "/10\n\n" + comment;
     id(container).appendChild(p);
   }
 
