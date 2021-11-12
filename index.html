@@ -2,11 +2,16 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+
 
     <title>gamedash</title>
 
     <!-- links css to html -->
     <link rel="stylesheet" href="./src/style.css">
+
+    <link rel="stylesheet" type="text/css" href="https://demo.plantpot.works/assets/css/normalize.css">
+    <link rel="stylesheet" href="https://use.typekit.net/opg3wle.css">
 
     <!-- links js to html -->
     <script src="./src/app.js" type="module"></script>
@@ -21,8 +26,39 @@
         <h1>gamedash</h1>
       </header>
 
-      <form>
-        Summoner Name:
+      <div id="container">
+        <div class="search-box">
+          <input id="fname" class="search-form-input" type="search" name="search" placeholder="Search...">
+          <details id="dropdown" class="dropdown">
+            <summary class="dropdown-button">
+              <span id="selected-item" class="selected-item">NA1</span>
+            </summary>
+            <details-menu class="dropdown-menu">
+              <div class="dropdown-menu-header">Select language</div>
+              <div class="dropdown-menu-list">
+                <label class="dropdown-menu-item">
+                  <input type="radio" name="item" value="NA1" checked>
+                  <span>NA1</span>
+                </label>
+                <label class="dropdown-menu-item">
+                  <input type="radio" name="item" value="BR1">
+                  <span>BR1</span>
+                </label>
+                <label class="dropdown-menu-item">
+                  <input type="radio" name="item" value="EUW1">
+                  <span>EUW1</span>
+                </label>
+                <label class="dropdown-menu-item">
+                  <input type="radio" name="item" value="EUN1">
+                  <span>EUN1</span>
+                </label>
+              </div>
+            </details-menu>
+          </details>
+        </div>
+      </div>
+
+        <!-- Summoner Name:
         <input type="text" id="fname" name="fname">
         <input id="button" type="button" value="Search">
         <label for="regions"></label>
@@ -38,13 +74,17 @@
           <option value="OC1">OC1</option>
           <option value="RU">RU</option>
           <option value="TR1">TR1</option>
-        </select>
-      </form>
+        </select> -->
+
+
       <img id="profileIMG" style="display:none;" src="" height="100" width="100"><img>
       <span id="summonerLVL"></span>
-      <div id="errorDiv" class="hidden">
+
+      <!-- <div id="errorDiv" class="hidden">
         <img id="404error" style="display:none;" src="./src/img/usernotfound.jpg"></img>
-      </div>
+      </div> -->
+
+
       <div class="hidden">
         <div id="bars6">
             <span></span>

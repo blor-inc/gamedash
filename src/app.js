@@ -11,7 +11,6 @@ import * as RiotAPI from "./services/RiotAPI.js";
   let labels = [];
   let title = "";
   var colors = ['rgba(243, 164, 181,0.9)', 'rgba(137, 101, 224,0.9)', 'rgb(94, 114, 228,0.9)', 'rgb(0, 242, 195,0.9)']
-  var dropRegion = "";
   var new_row = "";
 
   function test() {
@@ -30,23 +29,41 @@ import * as RiotAPI from "./services/RiotAPI.js";
   function init() {
     test();
 
-    let btn = id("button");
-    btn.addEventListener("click", summoner_id_search);
     let search_text = id("fname");
 
     search_text.addEventListener('keypress', function ( event ){
       if (event.key === "Enter"){
         event.preventDefault();
-        summoner_id_search();
+        summonerIdSearch();
       }
     })
+
+    let items = document.getElementsByName('item');
+    let selectedItem = document.getElementById('selected-item');
+    let dropdown = document.getElementById('dropdown');
+
+    items.forEach(item => {
+      item.addEventListener('change', () => {
+        if (item.checked) {
+          selectedItem.innerHTML = item.value;
+          dropdown.open = false;
+        }
+      });
+    });
   }
 
-  async function summoner_id_search() {
-    // get data from the textbox search
-    id("404error").style.display="none";
+  async function summonerIdSearch() {
+
+    // id("404error").style.display="none";
+
+    console.log("summonerIdSearch")
+
     searchInput = id("fname").value.replace(/\s/g, '');
-    dropRegion = id("regions").value.toLowerCase();
+
+    let region = document.getElementById('selected-item').innerHTML.toLowerCase();
+    console.log(region);
+    
+
 
     //clear all graphs
     id("graphs").innerHTML = "";
@@ -54,11 +71,12 @@ import * as RiotAPI from "./services/RiotAPI.js";
     // Loading circle while grabbing data from API
     id("bars6").parentNode.classList.remove("hidden");
 
-    let info = await RiotAPI.getUserData(dropRegion, searchInput)
+    let info = await RiotAPI.getUserData(region, searchInput)
     console.log(info);
+
     id("bars6").parentNode.classList.add("hidden");
     if (info === "error") {
-      id("404error").style.display="block";
+      // id("404error").style.display="block";
 
     } else {
       if (info.gamesFound === 0) {
@@ -129,7 +147,7 @@ import * as RiotAPI from "./services/RiotAPI.js";
   }
 
 
-  function createGraph(data, labels, title, container) {
+  function createGraph(data, labels, title, htmlContainer) {
     // colors = arrayRotate(colors);
 
     let figure = gen("figure");
@@ -138,7 +156,7 @@ import * as RiotAPI from "./services/RiotAPI.js";
     canvas.id = title;
 
     figure.appendChild(canvas);
-    id(container).appendChild(figure);
+    id(htmlContainer).appendChild(figure);
 
 
     const myChart = new Chart(title, {
@@ -207,6 +225,10 @@ import * as RiotAPI from "./services/RiotAPI.js";
     */
    function id(name) {
      return document.getElementById(name);
+   }
+
+   function name(name) {
+     return document.getElementsByName(name);
    }
 
    /**
