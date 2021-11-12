@@ -106,20 +106,20 @@ import * as RiotAPI from "./services/RiotAPI.js";
     let figure = gen("figure");
     figure.appendChild(p);
 
-    p.textContent = name + " Score: " + score + "/10\n\n" + comment;
+    p.innerHTML = name + " Score: " + score + "/10\n\n"  + "<i>\""+ comment + "\"</i>";
     id(container).appendChild(figure);
-
   }
 
 
-
+  // Look up summoner name in API
+  
   async function summonerIdSearch() {
 
     // id("404error").style.display="none";
 
     searchInput = id("fname").value.replace(/\s/g, '');
 
-    let region = document.getElementById('selected-item').innerHTML.toLowerCase();
+    let region = id('selected-item').innerHTML.toLowerCase();
 
     // Clear all graphs
     id("graphs").innerHTML = "";
@@ -127,26 +127,32 @@ import * as RiotAPI from "./services/RiotAPI.js";
     // Loading circle while grabbing data from API
     id("bars6").parentNode.classList.remove("hidden");
 
-    let info = await RiotAPI.getUserData(region, searchInput)
+    let info = await RiotAPI.getUserData(region, searchInput);
 
     id("bars6").parentNode.classList.add("hidden");
+
+    var error_id = id("error");
+
+    let test = id(info);
+    console.log(test);
 
     // Error message
     if (info === "error") {
       // id("404error").style.display="block";
+      error.innerHTML = "<span style='color: rgb(243, 164, 181);'>"+"Summoner ID not found</span>";
 
     } else {
       if (info.gamesFound === 0) {
-        alert("No Ranked games found"); // Need better UI to signal this to user.
-        return;
+        error.innerHTML = "<span style='color: rgb(243, 164, 181);'>"+"No ranked games found.</span>"
+        // alert("No Ranked games found");
       }
 
-      id("profileIMG").src = info.profileIconLink;
-      id("profileIMG").style.display = "block";
-      id("summonerName").innerHTML = info.summoner.name;
-      id("summonerName").style.display = "block";
-      id("summonerLVL").innerHTML = info.summoner.summonerLevel;
-      id("summonerLVL").style.display = "block";
+      // id("profileIMG").src = info.profileIconLink;
+      // id("profileIMG").style.display = "block";
+      // id("summonerName").innerHTML = info.summoner.name;
+      // id("summonerName").style.display = "block";
+      // id("summonerLVL").innerHTML = info.summoner.summonerLevel;
+      // id("summonerLVL").style.display = "block";
 
       // Create the graphs!!!
       labels = [info.summoner.name + " (%)", "teammates (%)"];
@@ -181,8 +187,8 @@ import * as RiotAPI from "./services/RiotAPI.js";
 
       const visionScore = getVisionaryScore(info.visionScorePercentage, info.visionWardsPlacedPercentage);
       createCard(visionScore, "Visionary", getVisionComment(visionScore), box4);
-    }
 
+    }
   }
 
   function getKSComment(score) {
@@ -309,7 +315,7 @@ import * as RiotAPI from "./services/RiotAPI.js";
             },
 
             font:{
-              size:15,
+              size:20,
               family: "'Spartan', sans-serif"
             },
           },

@@ -18,6 +18,10 @@
     /* height:100%; */
   }
 
+  #error {
+    margin-left: 50px;
+  }
+
   #graphs {
     margin-bottom: 200px;
     display: flex;
@@ -31,14 +35,15 @@
   } */
 
   text {
-    background-color: rgba(50, 50, 93, 0.60);
+    background-color: rgba(94, 114, 228, 0.1);
     box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
     border-radius: 20px;
 
     padding: 25px;
     margin-right: 20px;
     margin-bottom: 20px;
-    margin-left: 50px;
+
+    text-align: center;
   }
 
 
@@ -59,19 +64,19 @@
 
   canvas {
     padding: 25px;
-    margin-right: 20px;
+    margin-right: 40px;
     margin-bottom: 20px;
     background-color:rgba(50, 50, 93, 0.60);
     font-family: "Spartan", sans-serif;
     box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
     border-radius: 20px;
-    margin-left: 50px;
+    /* margin-left: 50px; */
 
   }
 
   figure {
     display:flex;
-    flex-basis: 30%;
+    flex-basis: 25%;
     /* margin-right: 0px;
     margin-left: 0px; */
     flex-wrap:wrap;
@@ -89,7 +94,7 @@
   #headingSearch {
     display:flex;
     flex-direction:row;
-    align-items:center;
+    align-items: center;
   }
 
   #regions{
