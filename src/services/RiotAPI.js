@@ -26,43 +26,49 @@ const REQUEST_OPTIONS = {
  * @param {String} summonerName 
  */
 export async function getUserData(region, summonerName) {
-    let resultObj = [];
+    try {
+        let resultObj = [];
 
-    let summoner = await getSummonerByName(region, summonerName);
-
-    let matches = await getMatches(region, summoner.puuid, "ranked", 10);
-
-    resultObj["gamesFound"] = matches.length;
-    if (resultObj["gamesFound"] < 1) {
+        let summoner = await getSummonerByName(region, summonerName);
+    
+        let matches = await getMatches(region, summoner.puuid, "ranked", 10);
+    
+        resultObj["gamesFound"] = matches.length;
+        if (resultObj["gamesFound"] < 1) {
+            return resultObj;
+        }
+    
+        let matchInfos = await getMatchInfos(region, matches);
+    
+        resultObj["summoner"] = summoner;
+    
+        const gameStats = await getGameStats(summoner.puuid, matchInfos);
+        resultObj["gameStats"] = gameStats;
+    
+        resultObj["killPercentage"] = getKillPercentage(gameStats.playerStats, gameStats.teamStats);
+    
+        resultObj["deathPercentage"] = getDeathPercentage(gameStats.playerStats, gameStats.teamPlayerStats, gameStats.teamStats);
+    
+        resultObj["damagePercentage"] = getDamagePercentage(gameStats.playerStats, gameStats.teamPlayerStats);
+    
+        resultObj["killParticipationPercentage"] = getKillParticipationPercentage(gameStats.playerStats, gameStats.teamStats);
+    
+        resultObj["minionsKilledPercentage"] = getMinionsKilledPercentage(gameStats.playerStats, gameStats.teamPlayerStats, gameStats.teamStats);
+    
+        resultObj["goldEarnedPercentage"] = getGoldEarnedPercentage(gameStats.playerStats, gameStats.teamPlayerStats, gameStats.teamStats);
+    
+        resultObj["visionScorePerMinute"] = getVisionScorePerMinute(gameStats.playerStats, gameStats.gameTimes);
+    
+        resultObj["visionScorePercentage"] = getVisionScorePercentage(gameStats.playerStats, gameStats.teamPlayerStats, gameStats.teamStats);
+    
+        resultObj["profileIconLink"] = getProfileIconLink(summoner.profileIcondId);
+        console.log(gameStats.gameTimes);
         return resultObj;
+    } catch (e) {
+        console.warn(e);
+        return "error";
     }
 
-    let matchInfos = await getMatchInfos(region, matches);
-
-    resultObj["summoner"] = summoner;
-
-    const gameStats = await getGameStats(summoner.puuid, matchInfos);
-    resultObj["gameStats"] = gameStats;
-
-    resultObj["killPercentage"] = getKillPercentage(gameStats.playerStats, gameStats.teamStats);
-
-    resultObj["deathPercentage"] = getDeathPercentage(gameStats.playerStats, gameStats.teamPlayerStats, gameStats.teamStats);
-
-    resultObj["damagePercentage"] = getDamagePercentage(gameStats.playerStats, gameStats.teamPlayerStats);
-
-    resultObj["killParticipationPercentage"] = getKillParticipationPercentage(gameStats.playerStats, gameStats.teamStats);
-
-    resultObj["minionsKilledPercentage"] = getMinionsKilledPercentage(gameStats.playerStats, gameStats.teamPlayerStats, gameStats.teamStats);
-
-    resultObj["goldEarnedPercentage"] = getGoldEarnedPercentage(gameStats.playerStats, gameStats.teamPlayerStats, gameStats.teamStats);
-
-    resultObj["visionScorePerMinute"] = getVisionScorePerMinute(gameStats.playerStats, gameStats.gameTimes);
-
-    resultObj["visionScorePercentage"] = getVisionScorePercentage(gameStats.playerStats, gameStats.teamPlayerStats, gameStats.teamStats);
-
-    resultObj["profileIconLink"] = getProfileIconLink(summoner.profileIcondId);
-
-    return resultObj;
 }
 
 async function getGameStats(puuid, matchInfos) {
