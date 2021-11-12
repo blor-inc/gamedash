@@ -18,13 +18,15 @@ import * as RiotAPI from "./services/RiotAPI.js";
     // graph test
     let box10 = newStat(10);
     createGraph([25, 75], ["A", "B"], "Test Test Test", box10, colors.slice(0,2));
+    createGraph([25, 75], ["A", "B"], "Test Again", box10, colors.slice(0,2));
+
     const score1 = getKSScore(25, 25);
     break_line();
 
     let box11 = newStat(11);
     createGraph([25, 75], ["A", "B"], "Another Test", box11, colors.slice(0,2));
     break_line();
-    createCard(score1, "Test Stat", "", box11);
+    createCard(score1, "Test Stat", "alskjdflasjflkasjdflajsdlfjalsdfjalsdfjalsdkjf", box11);
     
 
     // score test
@@ -81,7 +83,7 @@ import * as RiotAPI from "./services/RiotAPI.js";
   }
 
   // Creating HTML items
-  
+
   function newStat(num){
     let new_row = "row" + num;
     let box = gen("div");
@@ -100,9 +102,12 @@ import * as RiotAPI from "./services/RiotAPI.js";
   }
 
   function createCard(score, name, comment, container) {
-    let p = gen("p");
+    let p = gen("text");
+    let figure = gen("figure");
+    figure.appendChild(p);
+
     p.textContent = name + " Score: " + score + "/10\n\n" + comment;
-    id(container).appendChild(p);
+    id(container).appendChild(figure);
   }
 
 
