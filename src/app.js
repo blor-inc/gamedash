@@ -205,7 +205,7 @@ import * as RiotAPI from "./services/RiotAPI.js";
       createGraph(info.timeSpentDeadPercentage, ["Dead (%)", "Alive (%)"], "Average % Time Spent Dead", box3, colors.slice(4,6));
 
       const grayScore = getGrayScreenScore(info.deathPercentage, info.timeSpentDeadPercentage);
-      createCard(grayScore, "Gray Screener", getGrayComment(grayScore, Math.round(info.timeSpentDeadPercentage)), box3);
+      createCard(grayScore, "Gray Screen", getGrayComment(grayScore, Math.round(info.timeSpentDeadPercentage)), box3);
       break_line();
 
       let box4 = newStat(4);
