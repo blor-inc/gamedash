@@ -10,7 +10,9 @@ import * as RiotAPI from "./services/RiotAPI.js";
   let searchInput = "";
   let labels = [];
   let title = "";
+
   var colors = ['rgb(255, 214, 132, 1)', 'rgb(94, 72, 200,1)', 'rgb(255, 214, 132, 1)',  'rgba(74, 99, 231,1)', 'rgb(255, 214, 132, 1)', 'rgba(247, 84, 84,1)']
+
   var new_row = "";
 
   function test() {
@@ -155,7 +157,6 @@ import * as RiotAPI from "./services/RiotAPI.js";
     // Title: title of the graph
     // htmlContainer: which container in html the graph should be put into
     // Color: array of size 2 of the colors used in the chart.
-
     // colors = arrayRotate(colors);
 
     let figure = gen("figure");
