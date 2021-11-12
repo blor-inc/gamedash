@@ -11,7 +11,6 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "/public/index.html"));
 });
 
-
 app.listen(port, () => {
   console.log(`Listening to requests on http://localhost:${port}`);
 });
