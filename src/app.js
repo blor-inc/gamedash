@@ -16,17 +16,17 @@ import * as RiotAPI from "./services/RiotAPI.js";
     // RiotAPI.getUserData("na1", "nubwett").then(console.log);
 
     // graph test
-    let box10 = newStat(10);
-    createGraph([25, 75], ["A", "B"], "Test Test Test", box10, colors.slice(0,2));
-    createGraph([25, 75], ["A", "B"], "Test Again", box10, colors.slice(0,2));
+    // let box10 = newStat(10);
+    // createGraph([25, 75], ["A", "B"], "Test Test Test", box10, colors.slice(0,2));
+    // createGraph([25, 75], ["A", "B"], "Test Again", box10, colors.slice(0,2));
 
-    const score1 = getKSScore(25, 25);
-    break_line();
+    // const score1 = getKSScore(25, 25);
+    // break_line();
 
-    let box11 = newStat(11);
-    createGraph([25, 75], ["A", "B"], "Another Test", box11, colors.slice(0,2));
-    break_line();
-    createCard(score1, "Test Stat", "alskjdflasjflkasjdflajsdlfjalsdfjalsdfjalsdkjf", box11);
+    // let box11 = newStat(11);
+    // createGraph([25, 75], ["A", "B"], "Another Test", box11, colors.slice(0,2));
+    // break_line();
+    // createCard(score1, "Test Stat", "alskjdflasjflkasjdflajsdlfjalsdfjalsdfjalsdkjf", box11);
 
 
     // score test
