@@ -108,11 +108,8 @@ import * as RiotAPI from "./services/RiotAPI.js";
 
     p.innerHTML = "<h3>" + name + " Score: " + score + "/10\n\n"  + "</h3> " + comment ;
 
-    
-
     id(container).appendChild(figure);
   }
-
 
   // Look up summoner name in API
   
