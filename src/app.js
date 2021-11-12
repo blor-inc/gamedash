@@ -61,28 +61,65 @@ import * as RiotAPI from "./services/RiotAPI.js";
       id("404error").style.display="block";
 
     } else {
-
       if (info.gamesFound === 0) {
         alert("No Ranked games found"); // Need better UI to signal this to user.
         return;
       }
+      
       id("profileIMG").src = info.profileIconLink;
       id("profileIMG").style.display="block";
       // Create the graphs!!!
       labels = [info.summoner.name, "Team"]; // "Team" label is slightly misleading, should express "rest of the team"
-  
+
       let box1 = new_stat(1);
       createGraph([info.killPercentage, 100 - info.killPercentage], labels, "Kills", box1);
       createGraph([info.damagePercentage, 100 - info.damagePercentage], labels, "Damage", box1);
-          
+      let p1 = gen("p");
+      p1.textContent = "KS status: "
+      
+      if (info.killPercentage - info.damagePercentage >= 8) {
+        p1.textContent += "You dirty kser";
+      } else {
+        p1.textContent += "What a team player!"
+      }
+      id("row1").appendChild(p1);
+
       let box2 = new_stat(2);
       createGraph([info.killParticipationPercentage, 100 - info.killParticipationPercentage], labels, "Kill Participation", box2);
       createGraph([info.minionsKilledPercentage, 100 - info.minionsKilledPercentage], labels, "Minions Killed", box2);
-  
+
+      let p2 = gen("p");
+      p2.textContent = "Farmer status: "
+      if (info.killParticipationPercentage - info.minionsKilledPercentage <= 10) {
+        p2.textContent += "Drop the minions and go help your team!";
+      } else {
+        p2.textContent += "What a team player!"
+      }
+      id("row2").appendChild(p2);
+
       let box3 = new_stat(3);
       createGraph([info.visionScorePercentage, 100 - info.visionScorePercentage], labels, "Vision Score", box3);
       createGraph([info.deathPercentage, 100 - info.deathPercentage], labels, "Deaths", box3);
+
+      let p3 = gen("p");
+      p3.textContent = "Vision Status: "
+      if (info.visionScorePercentage < 20) {
+        p3.textContent += "Get some wards in your system!";
+      } else {
+        p3.textContent += "What a team player!"
+      }
+      p3.textContent += "\r\n";
+      p3.textContent += "Feeder Status: "
+      
+      if (info.deathPercentage >= 23) {
+        p3.textContent += "Slow down on the dying!";
+      } else {
+        p3.textContent += "What a team player!"
+      }
+      
+      id("row3").appendChild(p3);
     }
+
   }
 
   function arrayRotate(arr, reverse) {
@@ -149,7 +186,7 @@ import * as RiotAPI from "./services/RiotAPI.js";
       }
     });
     // all_charts.push(myChart);
-  
+
     return myChart;
   }
 
