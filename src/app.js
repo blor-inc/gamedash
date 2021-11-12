@@ -10,11 +10,15 @@ import * as RiotAPI from "./services/RiotAPI.js";
   let searchInput = "";
   let labels = [];
   let title = "";
-  var colors = ['rgba(243, 164, 181,0.9)', 'rgba(137, 101, 224,0.9)', 'rgb(94, 114, 228,0.9)', 'rgb(0, 242, 195,0.9)']
+
+  var colors = ['rgb(255, 214, 132, 1)', 'rgb(94, 72, 200,1)', 'rgb(255, 214, 132, 1)',  'rgba(74, 99, 231,1)', 'rgb(255, 214, 132, 1)', 'rgba(247, 84, 84,1)']
+
   var new_row = "";
 
   function test() {
-    RiotAPI.getUserData("na1", "phillipjuicyboy").then(console.log);
+    // RiotAPI.getUserData("na1", "phillipjuicyboy").then(console.log);
+    let box3 = new_stat(1);
+    createGraph([23, 100-23], ["A", "B"], "Test Test", box3, colors.slice(0,2));
   }
 
   function new_stat(num){
@@ -84,14 +88,14 @@ import * as RiotAPI from "./services/RiotAPI.js";
         return;
       }
       
-      id("profileIMG").src = info.profileIconLink;
-      id("profileIMG").style.display="block";
+      // id("profileIMG").src = info.profileIconLink;
+      // id("profileIMG").style.display="block";
       // Create the graphs!!!
-      labels = [info.summoner.name, "Team"]; // "Team" label is slightly misleading, should express "rest of the team"
+      labels = [info.summoner.name, "Teammates"]; // "Team" label is slightly misleading, should express "rest of the team"
 
       let box1 = new_stat(1);
-      createGraph([info.killPercentage, 100 - info.killPercentage], labels, "Kills", box1);
-      createGraph([info.damagePercentage, 100 - info.damagePercentage], labels, "Damage", box1);
+      createGraph([info.killPercentage, 100 - info.killPercentage], labels, "% Kills of Team", box1, colors.slice(0,2));
+      createGraph([info.damagePercentage, 100 - info.damagePercentage], labels, "% Damage of Team", box1, colors.slice(0,2));
       let p1 = gen("p");
       p1.textContent = "KS status: "
       
@@ -103,8 +107,8 @@ import * as RiotAPI from "./services/RiotAPI.js";
       id("row1").appendChild(p1);
 
       let box2 = new_stat(2);
-      createGraph([info.killParticipationPercentage, 100 - info.killParticipationPercentage], labels, "Kill Participation", box2);
-      createGraph([info.minionsKilledPercentage, 100 - info.minionsKilledPercentage], labels, "Minions Killed", box2);
+      createGraph([info.killParticipationPercentage, 100 - info.killParticipationPercentage], labels, "% Kill Participation", box2, colors.slice(2,4));
+      createGraph([info.minionsKilledPercentage, 100 - info.minionsKilledPercentage], labels, "% Minions Killed of Team", box2, colors.slice(2,4));
 
       let p2 = gen("p");
       p2.textContent = "Farmer status: "
@@ -116,8 +120,8 @@ import * as RiotAPI from "./services/RiotAPI.js";
       id("row2").appendChild(p2);
 
       let box3 = new_stat(3);
-      createGraph([info.visionScorePercentage, 100 - info.visionScorePercentage], labels, "Vision Score", box3);
-      createGraph([info.deathPercentage, 100 - info.deathPercentage], labels, "Deaths", box3);
+      createGraph([info.visionScorePercentage, 100 - info.visionScorePercentage], labels, "% Vision Score of Team", box3, colors.slice(4,6));
+      createGraph([info.deathPercentage, 100 - info.deathPercentage], labels, "% Deaths", box3, colors.slice(4,6));
 
       let p3 = gen("p");
       p3.textContent = "Vision Status: "
@@ -147,7 +151,12 @@ import * as RiotAPI from "./services/RiotAPI.js";
   }
 
 
-  function createGraph(data, labels, title, htmlContainer) {
+  function createGraph(data, labels, title, htmlContainer, color) {
+    // Data: array length 2 of two percentages
+    // Labels: corresponding labels of each color on the chart. same order as data
+    // Title: title of the graph
+    // htmlContainer: which container in html the graph should be put into
+    // Color: array of size 2 of the colors used in the chart.
     // colors = arrayRotate(colors);
 
     let figure = gen("figure");
@@ -166,18 +175,22 @@ import * as RiotAPI from "./services/RiotAPI.js";
         datasets: [{
           label: 'Graph',
           data: data,
-          backgroundColor:colors,
+          backgroundColor:color,
         }]
       },
       options: {
         hoverOffset: 6,
         responsive: true,
         plugins:{
-
+          tooltip: { 
+            bodyFont: {
+              size: 20
+            }
+          },
           title:{
             display: true,
             text: title,
-            color: '#adb5bd',
+            color: 'rgb(184, 191, 224)',
             align: 'start',
 
             padding: {
@@ -194,9 +207,9 @@ import * as RiotAPI from "./services/RiotAPI.js";
             position: 'bottom',
             labels:{
               padding: 50,
+              color: 'rgb(184, 191, 224)',
               font:{
-                size:15,
-                color:'white'
+                size:15
               }
             }
           }
