@@ -1,4 +1,10 @@
-# mito
+# [mito](https://mito-lol.herokuapp.com/)
+
+## Screenshots
+
+![app-load](https://user-images.githubusercontent.com/6797157/141599382-14a9c744-ab28-4c37-a177-4229d96e6496.png)
+
+![app1](https://user-images.githubusercontent.com/6797157/141599388-6502b933-84a3-4c86-b06c-5559d5562d19.png)
 
 ## Inspiration
 We were inspired by a member's dashboard that they used at work. On that dashboard, all sorts of different information could be viewed at the same time as charts and graphs, allowing the user to visually take in information and compare data as well. 
