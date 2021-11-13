@@ -290,7 +290,7 @@ import * as RiotAPI from "./services/RiotAPI.js";
    */
   function getVisionComment(score) {
     let desc = "<br> Having a high average vision score percentage of your team and" +
-               " a high number of wards placed increases your visionary score. <br><br><br><h6>" +
+               " a high number of wards placed increases your visionary score. <br><br><h6>" +
                "Data is collected over the last 10 ranked games.</h6>";
     let br_i = "<br><i>\"";
     let i_end = "\"</i><br>";
