@@ -31,7 +31,7 @@ export async function getUserData(region, summonerName) {
         let resultObj = [];
 
         let summoner = await getSummonerByName(region, summonerName);
-
+        console.log(summoner);
         let matches = await getMatches(region, summoner.puuid, "ranked", 10);
 
         resultObj["gamesFound"] = matches.length;
@@ -111,29 +111,12 @@ async function getGameStats(puuid, matchInfos) {
     return resultObj
 }
 
-/**
- * Example API (check if it works)
- * gets champion rotations
- *
- * https://developer.riotgames.com/apis#champion-v3
- * @param {String} region ex: NA1, BR1, EWN1, EWN1, JP1, KR, LA1, LA2, OC1, RU, TR1
- * @returns maxNewPlayerLevel, freeChampionIdsForNewPlayers, freeChampionIds
- */
-async function getChampRotation(region) {
-    return fetch('https://' + region + '.api.riotgames.com/lol/platform/v3/champion-rotations?api_key=' + KEY_QUERY, REQUEST_OPTIONS)
-        .then(resp => resp.json())
-        .catch((error) => console.warn("ERROR: ", error));
-}
 
-/**
- * // https://developer.riotgames.com/apis#summoner-v4
- * @param {string} region ex: NA1, BR1, EWN1, EWN1, JP1, KR, LA1, LA2, OC1, RU, TR1
- * @param {string} name
- * @returns object with summoner name and puuid.
- */
+
+
 async function getSummonerByName(region, name) {
     try {
-        let response = await fetch('https://' + region + '.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + name + KEY_QUERY, REQUEST_OPTIONS);
+        let response = await fetch("/sumByName/" + region + "/" + name);
         await statusCheck(response);
         let data = await response.json();
         // Some doggy put {"name": name}
@@ -145,11 +128,6 @@ async function getSummonerByName(region, name) {
     }
 }
 
-/**
- *
- * @param {String} region
- * @returns general region
- */
 function findGeneralRegion(region) {
     let generalRegion;
     if (MAPPED_REGIONS.americas.includes(region)) {
@@ -174,7 +152,8 @@ async function getMatches(region, puuid, matchType, count) {
         let queryString ='https://' + findGeneralRegion(region) + '.api.riotgames.com/lol/match/v5/matches/by-puuid/' + puuid + '/ids' + KEY_QUERY;
         queryString += "&count=" + count;
         queryString += "&type=" + matchType;
-        let response = await fetch(queryString, REQUEST_OPTIONS);
+        let response = await fetch("/getMatches/" +
+            region + "/" + puuid + "/" + matchType +"/" + count);
         await statusCheck(response);
         let data = await response.json();
 
