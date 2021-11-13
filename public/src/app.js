@@ -312,7 +312,7 @@ import * as RiotAPI from "./services/RiotAPI.js";
 
   function getAFKFarmingScore(kp, m) {
     const v = m * 4 - kp / 2;
-    return boundVal(v / 8, 0, 10).toFixed(1);
+    return boundVal(v / 8.5, 0, 10).toFixed(1);
   }
 
   function getGrayScreenScore(d, t) {
