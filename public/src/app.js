@@ -37,11 +37,11 @@ import * as RiotAPI from "./services/RiotAPI.js";
     // }
 
     // farmer test
-    for (let kp = 35; kp < 75; kp++) {
-      for (let m = 10; m < 50; m++) {
-        console.log('kp:' + kp + ', m:' + m + ', score:' + getAFKFarmingScore(kp, m));
-      }
-    }
+    // for (let kp = 35; kp < 75; kp++) {
+    //   for (let m = 10; m < 50; m++) {
+    //     console.log('kp:' + kp + ', m:' + m + ', score:' + getAFKFarmingScore(kp, m));
+    //   }
+    // }
 
     // gray screen gamer test
     // for (let d = 0; d < 50; d++) {
@@ -60,7 +60,7 @@ import * as RiotAPI from "./services/RiotAPI.js";
 
   function init() {
     // uncomment for tests
-    test();
+    // test();
 
     let search_text = id("fname");
 
