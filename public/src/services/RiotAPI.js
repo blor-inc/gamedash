@@ -3,7 +3,7 @@
 const LATEST_DATA_DRAGON_VERSION = "11.22.1";
 
 // const KEY = process.env.RIOT_API_KEY;
-const KEY = "RGAPI-eeeb9888-fa50-4585-9723-148b93fe1a03";
+const KEY = "RGAPI-708341f2-6674-4fc1-a204-f562aafe0bb4";
 const KEY_QUERY = "?api_key=" + KEY;
 
 const MAPPED_REGIONS = {"americas": ["na1", "br1", "la1", "la2", "oc1"],
