@@ -15,7 +15,7 @@ export async function getUserData(region, summonerName) {
         let resultObj = [];
 
         let summoner = await getSummonerByName(region, summonerName);
-        console.log(summoner);
+        // console.log(summoner);
         let matches = await getMatches(region, summoner.puuid, "ranked", 10);
 
         resultObj["gamesFound"] = matches.length;

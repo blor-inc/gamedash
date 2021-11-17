@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const axios = require('axios');
@@ -20,7 +21,6 @@ app.listen(port, () => {
 });
 
 const KEY = process.env.RIOT_API_KEY;
-// const KEY = "RGAPI-845ae22f-1174-412f-9a3d-7413515d9f10";
 const KEY_QUERY = "?api_key=" + KEY;
 app.get("/key", key);
 function key(req, res) {
@@ -54,7 +54,6 @@ async function matchInfoAPI(req, res) {
     let xd = await getMatchInfo(region, match);
     res.json(xd);
 }
-
 
 const MAPPED_REGIONS = {"americas": ["na1", "br1", "la1", "la2", "oc1"],
                         "asia": ["kr", "jp1"],

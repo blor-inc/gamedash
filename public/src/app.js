@@ -162,7 +162,7 @@ import * as RiotAPI from "./services/RiotAPI.js";
     var error_id = id("error");
 
     let test = id(info);
-    console.log(test);
+    // console.log(test);
 
     // Error message
     if (info === "error") {
