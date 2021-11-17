@@ -12,16 +12,20 @@ app.get("/", (req, res) => {
 });
 
 app.get("/sumByName/:region/:name", getSummoner);
-app.get("/getMatches/:region:/puuid:/matchType:/count", getMatches);
-app.get("/getMatchesInfo/:region/:matches", getMatchInfos);
+app.get("/getMatches/:region/:puuid/:matchType/:count", getMatchesAPI);
+app.get("/getMatchesInfo/:region/:match", matchInfoAPI);
 
 app.listen(port, () => {
   console.log(`Listening to requests on http://localhost:${port}`);
 });
 
-const KEY = "RGAPI-2e3a145a-d0c3-4cf6-9b65-061be06ba020";
+const KEY = process.env.RIOT_API_KEY;
+// const KEY = "RGAPI-845ae22f-1174-412f-9a3d-7413515d9f10";
 const KEY_QUERY = "?api_key=" + KEY;
-
+app.get("/key", key);
+function key(req, res) {
+    res.json(KEY);
+}
 
 // This prevents something called preflight requests which can cause CORS errors.
 // GET requests encourages simple requests and tries to avoid CORS policy blocked errors.
@@ -35,27 +39,27 @@ async function getSummoner(req, res) {
   let xd = await getSummonerByName(region, name);
   res.json(xd);
 }
-async function getMatchess(req, res) {
+async function getMatchesAPI(req, res) {
   let region = req.params.region;
   let puuid = req.params.puuid;
   let matchType = req.params.matchType;
-  let count = req.parasm.count;
+  let count = req.params.count;
   let xd = await getMatches(region, puuid, matchType, count);
   res.json(xd);
 }
 
-// const KEY = process.env.RIOT_API_KEY;
+async function matchInfoAPI(req, res) {
+    let region = req.params.region;
+    let match = req.params.match;
+    let xd = await getMatchInfo(region, match);
+    res.json(xd);
+}
+
 
 const MAPPED_REGIONS = {"americas": ["na1", "br1", "la1", "la2", "oc1"],
                         "asia": ["kr", "jp1"],
                         "europe": ["eun1", "euw1", "tr1", "ru"]};
 
-/**
- * // https://developer.riotgames.com/apis#summoner-v4
- * @param {string} region ex: NA1, BR1, EWN1, EWN1, JP1, KR, LA1, LA2, OC1, RU, TR1
- * @param {string} name
- * @returns object with summoner name and puuid.
- */
 async function getSummonerByName(region, name) {
     try {
         let response = await axios.get('https://' + region + '.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + name + KEY_QUERY, REQUEST_OPTIONS);
@@ -69,11 +73,6 @@ async function getSummonerByName(region, name) {
     }
 }
 
-/**
- *
- * @param {String} region
- * @returns general region
- */
 function findGeneralRegion(region) {
     let generalRegion;
     if (MAPPED_REGIONS.americas.includes(region)) {
@@ -86,22 +85,13 @@ function findGeneralRegion(region) {
     return generalRegion;
 }
 
-/**
- *
- * @param {string} region
- * @param {string} name
- * @param {string} matchType
- * @returns the match data of last 10 ranked games, summoner name, and summoner puuid
- */
 async function getMatches(region, puuid, matchType, count) {
     try {
         let queryString ='https://' + findGeneralRegion(region) + '.api.riotgames.com/lol/match/v5/matches/by-puuid/' + puuid + '/ids' + KEY_QUERY;
         queryString += "&count=" + count;
         queryString += "&type=" + matchType;
         let response = await axios.get(queryString, REQUEST_OPTIONS);
-        console.log(respose);
         let data = await response.data;
-
         return data
     } catch(e) {
         console.warn(e);
@@ -109,16 +99,12 @@ async function getMatches(region, puuid, matchType, count) {
     }
 }
 
-async function getMatchInfos(region, matches) {
+async function getMatchInfo(region, match) {
     try {
-        let matchInfos = [];
-        for (const matchId of matches) {
-            let response = await axios.get('https://' + findGeneralRegion(region) + '.api.riotgames.com/lol/match/v5/matches/' + matchId + KEY_QUERY);
-            let matchInfo = await response.data;
-            matchInfos.push(matchInfo);
-        }
-
-        return matchInfos;
+        let queryString = 'https://' + findGeneralRegion(region) + '.api.riotgames.com/lol/match/v5/matches/' + match + KEY_QUERY;
+        let response = await axios.get(queryString, REQUEST_OPTIONS);
+        let data = await response.data;
+        return data;
     } catch(e) {
         console.warn(e);
         return "Error: Could not get match info for specified player";
