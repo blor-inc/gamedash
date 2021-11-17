@@ -22,10 +22,6 @@ app.listen(port, () => {
 
 const KEY = process.env.RIOT_API_KEY;
 const KEY_QUERY = "?api_key=" + KEY;
-app.get("/key", key);
-function key(req, res) {
-    res.json(KEY);
-}
 
 // This prevents something called preflight requests which can cause CORS errors.
 // GET requests encourages simple requests and tries to avoid CORS policy blocked errors.
