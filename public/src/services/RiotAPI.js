@@ -1,5 +1,6 @@
 "use strict";
 const LATEST_DATA_DRAGON_VERSION = "11.22.1";
+
 /**
  * One function to rule them all.
  *

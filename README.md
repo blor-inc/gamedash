@@ -1,14 +1,20 @@
-# mito
+# [mito](https://mito-lol.herokuapp.com/)
+
+## Screenshots
+
+![app-load](https://user-images.githubusercontent.com/6797157/141599382-14a9c744-ab28-4c37-a177-4229d96e6496.png)
+
+![app1](https://user-images.githubusercontent.com/6797157/141599388-6502b933-84a3-4c86-b06c-5559d5562d19.png)
 
 ## Inspiration
 We were inspired by a member's dashboard that they used at work. On that dashboard, all sorts of different information could be viewed at the same time as charts and graphs, allowing the user to visually take in information and compare data as well. 
 When we think about how we interpret data from our League games, we realized that websites currently available to the community may have a lot of raw data reported, but are not necessarily presented in a visually digestible way. With this project, we wanted to try and graph player data that can help players to parse through and understand things from the data from post-game stats that would not otherwise be apparent from just looking at the numbers. 
 
 ## What it does
-The user is able to search their League summoner name, by region. Our website will pull relevant information from the Riot API, and generate graphs on the screen. The graphs will be related to their last 10 ranked games played and describe some sort of statistic, synthesized by related data points. Descriptions are also provided with each set of graphs to describe what the statistic would mean and how it was calculated. 
+The user is able to search their League summoner name, by region. Our website will pull relevant information from the Riot API, and generate graphs on the screen. The graphs will be related to their last 10 ranked games played and describe some sort of statistic, synthesized by related data points. Descriptions are also provided with each set of graphs to describe what the statistic means. 
 
 ## How we built it
-We started in VS Code, and built the website with vanilla HTML/CSS. The website's low-light theme is meant to be comfortable to look at, with colors that pop out to draw the user's eyes to the important stuff. We used JavaScript to link together our website's visuals and to give elements functionality, as well as to pull information from Riot's API. Our team used Git and GitHub to sync our work as we built out different parts of the project.
+We started in VS Code, and built the website with vanilla HTML/CSS. The website's low-light theme is meant to be comfortable to look at, with colors that pop out to draw the user's eyes to the important stuff. We used JavaScript to link together our website's visuals and to give elements functionality, as well as to pull information from Riot's API. Our team used Git and GitHub to sync our work as we built out different parts of the project. Toward the end we stood up a backend server with ExpressJS, NodeJS, and Heroku. Currently the app is now hosted there.
 
 ## Challenges we ran into
 We ran into so many challenges. Two of our members are beginners, and were learning many things for the first time. HTML and CSS were totally new to one member, who learned it from scratch to build the front-facing part of the website. 
@@ -25,12 +31,12 @@ We're proud of putting together a website that can actually pull data from API's
 ## What we learned
 As a team, we learned to delegate tasks throughout the team and to ask for help and offer help. We learned that although it may seem easy (at first) to reach all our initial goals, it is actually not all as simple as it seems. In addition, we learned a lot about each other's different viewpoints during our discussions at team meetings.
 
-Individually, we each learned skills that we previously did not before. These things include using HTML and CSS to create a visually appealing website, linking the elements on the website to functions behind-the-scenes in JavaScript, creating functions that make API calls to the Riot API, troubleshooting online, and git workflow.
+Individually, we each learned skills that we previously did not have. These things include using HTML and CSS to create a visually appealing website, linking the elements on the website to functions behind-the-scenes in JavaScript, creating functions that make API calls to the Riot API, hosting with a backend server using ExpressJS, NodeJS, and Heroku, troubleshooting online, and git workflow.
 
 ## What's next for mito
 We would really like to implement many more features for the future of mito. There are many metrics we would have liked to implement, such as combined kills per min, kills per win / deaths per loss, and many more. 
 
-For simplicity, we stuck to pie charts this time, but we would have liked to incorporate more data-heavy types of graphs, such as radar charts to compare different statistical categories, line charts to compare personal growth, and bar charts to compare vs benchmark values. 
+For simplicity, we stuck to doughnut charts this time, but we would have liked to incorporate more data-heavy types of graphs, such as radar charts to compare different statistical categories, line charts to compare personal growth, and bar charts to compare the user vs benchmark values. 
 
 In addition, we would like to incorporate the ability to search multiple players and to compare stats head-to-head. This would require some intricate features as well as data overlays, which could not be achieved over the course of the hackathon timeline. This would not be limited to just your friends and teammates - it would also include the ability to compare yourself to the pros competing in the scene.
 
