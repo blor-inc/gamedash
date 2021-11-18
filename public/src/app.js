@@ -162,11 +162,13 @@ import * as RiotAPI from "./services/RiotAPI.js";
     var error_id = id("error");
 
     let test = id(info);
-    console.log(test);
+    // console.log(test);
 
     // Error message
     if (info === "error") {
       // id("404error").style.display="block";
+      
+      // This thing doesn't work? It just logs it to the console.
       error.innerHTML = "<span style='color: rgb(243, 164, 181);'>"+"Summoner ID not found.</span>";
 
     } else {

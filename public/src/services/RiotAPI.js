@@ -1,20 +1,5 @@
 "use strict";
-
 const LATEST_DATA_DRAGON_VERSION = "11.22.1";
-
-// const KEY = process.env.RIOT_API_KEY;
-const KEY = "RGAPI-708341f2-6674-4fc1-a204-f562aafe0bb4";
-const KEY_QUERY = "?api_key=" + KEY;
-
-const MAPPED_REGIONS = {"americas": ["na1", "br1", "la1", "la2", "oc1"],
-                        "asia": ["kr", "jp1"],
-                        "europe": ["eun1", "euw1", "tr1", "ru"]};
-
-// This prevents something called preflight requests which can cause CORS errors.
-// GET requests encourages simple requests and tries to avoid CORS policy blocked errors.
-const REQUEST_OPTIONS = {
-    method: 'GET',
-}
 
 /**
  * One function to rule them all.
@@ -31,7 +16,7 @@ export async function getUserData(region, summonerName) {
         let resultObj = [];
 
         let summoner = await getSummonerByName(region, summonerName);
-
+        // console.log(summoner);
         let matches = await getMatches(region, summoner.puuid, "ranked", 10);
 
         resultObj["gamesFound"] = matches.length;
@@ -111,29 +96,9 @@ async function getGameStats(puuid, matchInfos) {
     return resultObj
 }
 
-/**
- * Example API (check if it works)
- * gets champion rotations
- *
- * https://developer.riotgames.com/apis#champion-v3
- * @param {String} region ex: NA1, BR1, EWN1, EWN1, JP1, KR, LA1, LA2, OC1, RU, TR1
- * @returns maxNewPlayerLevel, freeChampionIdsForNewPlayers, freeChampionIds
- */
-async function getChampRotation(region) {
-    return fetch('https://' + region + '.api.riotgames.com/lol/platform/v3/champion-rotations?api_key=' + KEY_QUERY, REQUEST_OPTIONS)
-        .then(resp => resp.json())
-        .catch((error) => console.warn("ERROR: ", error));
-}
-
-/**
- * // https://developer.riotgames.com/apis#summoner-v4
- * @param {string} region ex: NA1, BR1, EWN1, EWN1, JP1, KR, LA1, LA2, OC1, RU, TR1
- * @param {string} name
- * @returns object with summoner name and puuid.
- */
 async function getSummonerByName(region, name) {
     try {
-        let response = await fetch('https://' + region + '.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + name + KEY_QUERY, REQUEST_OPTIONS);
+        let response = await fetch("/sumByName/" + region + "/" + name);
         await statusCheck(response);
         let data = await response.json();
         // Some doggy put {"name": name}
@@ -147,23 +112,6 @@ async function getSummonerByName(region, name) {
 
 /**
  *
- * @param {String} region
- * @returns general region
- */
-function findGeneralRegion(region) {
-    let generalRegion;
-    if (MAPPED_REGIONS.americas.includes(region)) {
-        generalRegion = "americas";
-    } else if (MAPPED_REGIONS.asia.includes(region)) {
-        generalRegion = "asia";
-    } else {
-        generalRegion = "europe";
-    }
-    return generalRegion;
-}
-
-/**
- *
  * @param {string} region
  * @param {string} name
  * @param {string} matchType
@@ -171,13 +119,9 @@ function findGeneralRegion(region) {
  */
 async function getMatches(region, puuid, matchType, count) {
     try {
-        let queryString ='https://' + findGeneralRegion(region) + '.api.riotgames.com/lol/match/v5/matches/by-puuid/' + puuid + '/ids' + KEY_QUERY;
-        queryString += "&count=" + count;
-        queryString += "&type=" + matchType;
-        let response = await fetch(queryString, REQUEST_OPTIONS);
+        let response = await fetch("/getMatches/" + region + "/" + puuid + "/" + matchType +"/" + count);
         await statusCheck(response);
         let data = await response.json();
-
         return data
     } catch(e) {
         console.warn(e);
@@ -195,7 +139,7 @@ async function getMatchInfos(region, matches) {
     try {
         let matchInfos = [];
         for (const matchId of matches) {
-            let response = await fetch('https://' + findGeneralRegion(region) + '.api.riotgames.com/lol/match/v5/matches/' + matchId + KEY_QUERY);
+            let response = await fetch("/getMatchesInfo/" + region + "/" + matchId);
             await statusCheck(response);
             let matchInfo = await response.json();
             matchInfos.push(matchInfo);
@@ -208,6 +152,7 @@ async function getMatchInfos(region, matches) {
     }
 }
 
+// If we aren't using this can we comment it out
 function median(arr) {
     const mid = Math.floor(arr.length / 2);
     const nums = [...arr].sort((a, b) => a - b);
@@ -268,6 +213,7 @@ function getKillParticipationPercentage(playerStats, teamStats) {
     return average(percentages)
 }
 
+// if we aren't using this can we comment it out
 function getTimeSpentDeadPercentageOfGame(gameStats) {
     let playerDeathTimes = [];
     for (const playerStat of gameStats.playerStats) {
