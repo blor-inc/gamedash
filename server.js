@@ -11,7 +11,9 @@ app.use(express.static('public'));
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "/public/index.html"));
 });
-
+app.get("/riot.txt", (req, res) => {
+  res.sendFile(path.join(__dirname, "/riot.txt"));
+});
 app.get("/sumByName/:region/:name", getSummoner);
 app.get("/getMatches/:region/:puuid/:matchType/:count", getMatchesAPI);
 app.get("/getMatchesInfo/:region/:match", matchInfoAPI);
